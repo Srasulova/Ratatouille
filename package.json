@@ -1,0 +1,21 @@
+{
+  "name": "capstone-project-one-6852e58059534e809b4422ed652c4bfe",
+  "version": "1.0.0",
+  "description": "We have broken down the Capstone Project into easy-to-follow steps. Each step of the capstone contains a link with instructions for that step. Here’s a quick overview of what you’ll do for each step of your capstone project:",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"flask run\" \"npm run tailwind\"",
+    "tailwind": "npx tailwindcss -i ./static/stylesheets/input.css -o ./static/stylesheets/output.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.3"
+  },
+  "dependencies": {
+    "@tailwindcss/forms": "^0.5.7",
+    "concurrently": "^8.2.2"
+  }
+}
