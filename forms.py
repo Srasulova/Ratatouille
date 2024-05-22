@@ -28,3 +28,8 @@ class UserEditForm(FlaskForm):
     image_url = StringField('Image URL')
     bio = TextAreaField('Bio')
     location = StringField('Location')
+
+
+class ReviewForm(FlaskForm):
+    """Form for adding/editing a review"""
+    text = TextAreaField('text', validators=[DataRequired()])
