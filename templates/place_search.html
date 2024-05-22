@@ -1,0 +1,46 @@
+<!-- {% extends 'base.html' %}
+
+<h1 class="text-emerald-500 text-xxl font-bold">
+  Are you a food blogger? Welcome to Ratatouille
+</h1>
+
+<div class="w-48 ml-4">
+  <form action="/" method="POST">
+    <label for="email" class="block text-sm font-medium leading-6 text-gray-900"
+      >Zip Code</label
+    >
+    <div class="mt-2">
+      <input
+        type="text"
+        name="place"
+        id="place"
+        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        placeholder="Enter an address, location, or a zipcode"
+        aria-describedby="place-description"
+      />
+    </div>
+    <button
+      type="submit"
+      class="mt-4 px-4 py-2 bg-emerald-500 text-white rounded"
+    >
+      Submit
+    </button>
+  </form>
+</div>
+
+{% if restaurants %}
+<div class="ml-4 mt-4">
+  <h3 class="text-xl font-bold">Restaurants near you</h3>
+  <ul>
+    {% for restaurant in restaurants %}
+    <li>
+      {{restaurant.name}}
+      <ol>
+        {% for review in restaurant_reviews %} {{review}} {% endfor %}
+      </ol>
+    </li>
+
+    {% endfor %}
+  </ul>
+</div>
+{% endif %} {% endblock %} -->
