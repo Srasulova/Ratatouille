@@ -256,3 +256,16 @@ class Review(db.Model):
 
 
 
+def connect_db(app):
+    """Connect this db to provide Flask app"""
+
+    db.app = app
+    db.init_app(app)
+
+    #Seed database if no records are present in the User, Restaurant or Review table
+
+    if len(User.query.all()) == 0 or len(Restaurant.query.all()) == 0 or len(Review.query.all()) == 0 or len(WishlistRestaurants.query.all()) == 0 or len(VisitedRestaurants.query.all()) == 0 or len(Favorites.query.all()) == 0:
+        db.drop_all()
+        db.create_all()
+
+    
