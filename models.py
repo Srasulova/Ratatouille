@@ -1,15 +1,23 @@
 """SQLAlchemy models for Ratatouille."""
 
 # from csv import DictReader
-# from datetime import datetime
+from datetime import datetime
 
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 
 
+class MyDateTime(db.TypeDecorator):
+    impl = db.DateTime
+
+    def process_bind_param(self, value, dialect):
+        if type(value) is str:
+            return datetime.strptime(value, '%Y-%m-%d %H:%M:%S.%f')
+        return value
 
 class Follows(db.Model):
     """Connection of a follower <-> followed_user."""
@@ -241,7 +249,8 @@ class Review(db.Model):
 
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey('users.id', ondelete='cascade')
+        db.ForeignKey('users.id', ondelete='cascade'),
+        nullable = False
     )
 
     restaurant_id = db.Column(
@@ -254,6 +263,14 @@ class Review(db.Model):
         nullable = False
     )
 
+    timestamp = db.Column(
+        MyDateTime,
+        nullable=False,
+        default=datetime.now(),
+    )
+
+    # user = db.relationship('User', backref='user_reviews')
+
 
 
 def connect_db(app):
@@ -264,8 +281,8 @@ def connect_db(app):
 
     #Seed database if no records are present in the User, Restaurant or Review table
 
-    if len(User.query.all()) == 0 or len(Restaurant.query.all()) == 0 or len(Review.query.all()) == 0 or len(WishlistRestaurants.query.all()) == 0 or len(VisitedRestaurants.query.all()) == 0 or len(Favorites.query.all()) == 0:
-        db.drop_all()
-        db.create_all()
+    # if len(User.query.all()) == 0 or len(Restaurant.query.all()) == 0 or len(Review.query.all()) == 0 or len(WishlistRestaurants.query.all()) == 0 or len(VisitedRestaurants.query.all()) == 0 or len(Favorites.query.all()) == 0:
+    #     db.drop_all()
+    #     db.create_all()
 
     

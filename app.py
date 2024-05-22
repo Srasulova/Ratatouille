@@ -6,6 +6,7 @@ from models import db, connect_db, User, Restaurant, VisitedRestaurants, Wishlis
 from sqlalchemy.exc import IntegrityError
 from forms import UserAddForm, UserEditForm, LoginForm, ReviewForm
 from flask_bcrypt import Bcrypt
+# from flask_migrate import Migrate
 
 bcrypt = Bcrypt()
 
@@ -21,29 +22,75 @@ toolbar = DebugToolbarExtension(app)
 
 CURR_USER_KEY = 'curr_user'
 
+# migrate = Migrate(app, db)
+
 with app.app_context():
    connect_db(app)
+
+with app.app_context():
+    db.create_all()
 
 
 @app.before_request
 def add_user_to_g():
     """If a user is logged in, add them to Flask global"""
 
+    if CURR_USER_KEY in session:
+        g.user = User.query.get(session[CURR_USER_KEY])
+    else:
+        g.user = None
 
+def do_login(user):
+    """Log in user"""
+    session[CURR_USER_KEY] = user.id
 
+def do_logout():
+    """Logout user"""
+    if CURR_USER_KEY in session:
+        del session[CURR_USER_KEY]
 
 
 
 API_KEY = "AIzaSyDQaQ4Zi8e-5YKSb_9VJvkKns3uYoq435g"
 
-@app.route('/')
+
+#Homepage route
+
+@app.route('/', methods = ['GET', 'POST'])
 def homepage():
-    """Show homepage"""
-  
+    """Show homepage and display the signup form if user clicks on the signup button"""  
+    form = UserAddForm()
+
+    if form.validate_on_submit():
+        try:
+            user = User.signup(username = form.username.data, password = form.password.data, email= form.email.data, image_url= form.image_url.data or User.image_url.default.arg)
+            db.session.commit()
+        except IntegrityError:
+            flash("This username already exists! So many foodies think alike. Try another one!")
+            return render_template('base.html', form=form)
+        do_login(user)
+
+        return redirect('place_search.html')
+    else:
+        return render_template('base.html', form=form)
     
-    return render_template("base.html")
 
 
+
+
+
+##############################################################################
+# Turn off all caching in Flask
+
+@app.after_request
+def add_header(req):
+    """Add non-caching headers on every request."""
+
+    req.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    req.headers["Pragma"] = "no-cache"
+    req.headers["Expires"] = "0"
+    req.headers['Cache-Control'] = 'public, max-age=0'
+    return req
 
 
 #   if request.method == "POST":
