@@ -1,5 +1,28 @@
-{% extends "base.html" %} {% block login %}
+{% extends 'base.html' %} {% block login %}
 
-<h2>Hello login form</h2>
-
+<div id="login-form-container" class="hidden">
+  <div class="flex justify-center items-start min-h-screen bg-white mt-6">
+    <div class="w-full max-w-md bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-2xl font-bold text-center mb-6">Login to Ratatouille.</h2>
+      <form action="/" method="post" id="login_form">
+        {{ login_form.hidden_tag() }}
+        <input type="hidden" name="form_type" value="login" />
+        {% for field in login_form if field.widget.input_type != 'hidden' %}
+        <div class="mb-4">
+          {{ field.label(class="block text-gray-700 text-sm font-bold mb-2") }}
+          {{ field(class="shadow appearance-none border rounded w-full py-2 px-3
+          text-gray-700 leading-tight focus:outline-none focus:shadow-outline")
+          }}
+        </div>
+        {% endfor %}
+        <button
+          type="submit"
+          class="w-full bg-lime-800 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Login
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}
