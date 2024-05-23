@@ -63,31 +63,45 @@
       <!-- Sign up form -->
 
       <div id="signup-form-container" class="hidden">
-   <div class="flex justify-center items-start min-h-screen bg-white mt-6">
-  <div class="w-full max-w-md bg-white rounded-lg shadow-md p-6">
-    <h2 class="text-2xl font-bold text-center mb-6">Join Ratatouille today.</h2>
-    <form action="" method="post" id="user_form">
-      {{ form.hidden_tag() }} {% for field in form if field.widget.input_type !=
-      'hidden' %} {% for error in field.errors %}
-      <span class="text-red-500">{{ error }}</span>
-      {% endfor %}
-      <div class="mb-4">
-        {{ field.label(class="block text-gray-700 text-sm font-bold mb-2") }} {{
-        field(class="shadow appearance-none border rounded w-full py-2 px-3
-        text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
-      </div>
-      {% endfor %}
+        <div class="flex justify-center items-start min-h-screen bg-white mt-6">
+            <div class="w-full max-w-md bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-center mb-6">Join Ratatouille today.</h2>
+                <form action="/" method="post" id="signup_form">
+                    {{ signup_form.hidden_tag() }}
+                    <input type="hidden" name="form_type" value="signup">
+                    {% for field in signup_form if field.widget.input_type != 'hidden' %}
+                    <div class="mb-4">
+                        {{ field.label(class="block text-gray-700 text-sm font-bold mb-2") }}
+                        {{ field(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Sign Up</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-      <button
-        type="submit"
-        class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-      >
-        Sign Up
-      </button>
-    </form>
-  </div>
-</div>
-      </div>
+
+      <!-- Login form -->
+
+      <div id="login-form-container" class="hidden">
+        <div class="flex justify-center items-start min-h-screen bg-white mt-6">
+            <div class="w-full max-w-md bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-center mb-6">Login to Ratatouille.</h2>
+                <form action="/" method="post" id="login_form">
+                    {{ login_form.hidden_tag() }}
+                    <input type="hidden" name="form_type" value="login">
+                    {% for field in login_form if field.widget.input_type != 'hidden' %}
+                    <div class="mb-4">
+                        {{ field.label(class="block text-gray-700 text-sm font-bold mb-2") }}
+                        {{ field(class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="w-full bg-lime-800 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
 
 
@@ -96,29 +110,32 @@
 
 
 
-<script>
-    const signupBtn = document.getElementById('signup-button')
-    const signupFormDiv = document.getElementById('signup-form-container')
-    signupBtn.addEventListener('click', (e) => {
-        e.preventDefault()
-        console.log("clicking signup button")
-        console.log(e)
-        console.log(e.target)
-        signupFormDiv.classList.toggle('hidden')
-    })
-</script>
+      <script>
+        const signupBtn = document.getElementById('signup-button');
+        const loginBtn = document.getElementById('login-button');
+        const signupFormDiv = document.getElementById('signup-form-container');
+        const loginFormDiv = document.getElementById('login-form-container');
+    
+        signupBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Ensure login form is hidden
+           // loginFormDiv.classList.add('hidden'); 
+            signupFormDiv.classList.toggle('hidden'); // Toggle signup form visibility
+        });
+    
+        loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Ensure signup form is hidden
+           // signupFormDiv.classList.add('hidden'); 
+            loginFormDiv.classList.toggle('hidden'); // Toggle login form visibility
+        });
+    </script>
     
   </body>
 </html>
 
 
 
-<!-- const loginBtn = document.getElementById('login-button')
-const loginFormDiv = document.getElementById('login-form-container')
-signupBtn.addEventListener('click', (e) => {
-    e.preventDefault()
-    console.log("clicking login")
-    console.log(e)
-    console.log(e.target)
-    signupFormDiv.classList.toggle('hidden')
-}) -->
+<!-- console.log("clicking signup button")
+console.log(e)
+console.log(e.target) -->
