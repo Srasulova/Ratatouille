@@ -73,14 +73,14 @@ def homepage():
                 return render_template('base.html', signup_form=signup_form, login_form=login_form)
             do_login(user)
 
-            return redirect('place_search.html')
+            return redirect('home.html')
         elif form_type == 'login' and login_form.validate_on_submit():
             user = User.authenticate(login_form.username.data, login_form.password.data)
 
             if user:
                 do_login(user)
                 flash(f"Hello, {user.username}!")
-                return redirect('place_search.html')
+                return redirect('home.html')
             else:
                 flash("Invalid credentials!")
                 return render_template('base.html', signup_form=signup_form, login_form=login_form)
@@ -96,6 +96,10 @@ def logout():
     flash("You have been logged out")
     return redirect("/")
 
+
+@app.route('/home')
+def user_profile():
+    return render_template('home.html')
 
 
     
