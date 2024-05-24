@@ -56,7 +56,9 @@ def do_logout():
 @app.route('/', methods = ['GET', 'POST'])
 def homepage():
     """Show homepage and display the signup or login form based on user interaction"""  
-    return render_template('home_anon.html')
+    if not g.user:
+        return render_template('home_anon.html')
+    return render_template("home.html")
 
     
 @app.route('/signup', methods = ['GET', 'POST'])
@@ -72,21 +74,21 @@ def signup():
             return render_template('signup.html', form=form)
         do_login(user)
 
-        return redirect('home.html')
+        return redirect('/home')
     return render_template('signup.html', form=form)
 
 
 @app.route('/login', methods = ['GET', 'POST'])
 def user_login():
     form = LoginForm()
-    
+
     if form.validate_on_submit():
         user = User.authenticate(form.username.data, form.password.data)
 
         if user:
             do_login(user)
             flash(f"Hello, {user.username}!")
-            return redirect('home.html')
+            return redirect('/home')
         else:
             flash("Invalid credentials!")
             return render_template('login.html', form = form)
