@@ -152,11 +152,13 @@
   </nav>
 </header>
 
-<div class="relative flex h-16 justify-between">
-  <div
-    class="relative z-0 flex flex-1 items-center justify-center px-2 sm:absolute sm:inset-0"
-  >
-    <div class="w-full sm:max-w-xs">
+<!-- Search input -->
+<form class="h-16 my-8" method="POST">
+  <div class="flex flex-1 items-center justify-center px-2 space-y-3 flex-col">
+    <p class="text-lime-700 text-lg font-semibold">
+      Feeling hungry? Look for a restaurant in your area
+    </p>
+    <div class="w-full flex space-x-2 items-center justify-center mx-auto">
       <label for="search" class="sr-only">Search</label>
       <div class="relative">
         <div
@@ -176,14 +178,24 @@
           </svg>
         </div>
         <input
-          id="search"
-          name="search"
-          class="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-          placeholder="Search"
+          name="place"
+          id="place"
+          class="block w-full rounded-md border-0 bg-white py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-lime-700 sm:text-sm sm:leading-6"
+          placeholder="Enter an address, location, or a zipcode"
+          aria-describedby="place-description"
           type="search"
         />
       </div>
+
+      <button
+        href="/"
+        id="restaurant-search"
+        class="rounded-md bg-lime-800 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-lime-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-800"
+      >
+        Search
+      </button>
     </div>
   </div>
-</div>
-{% endblock %}
+</form>
+
+{% block user_profile %}{% endblock %} {% endblock %}

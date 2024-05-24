@@ -53,7 +53,7 @@ def do_logout():
 
 #Homepage route
 
-@app.route('/', methods = ['GET', 'POST'])
+@app.route('/')
 def homepage():
     """Show homepage and display the signup or login form based on user interaction"""  
     if not g.user:
@@ -108,7 +108,34 @@ def logout():
 
 @app.route('/home')
 def user_home():
+    """Show user's home page"""
+
     return render_template('home.html')
+
+
+@app.route('/<int:user_id>', methods=['GET','POST'])
+def users_show(user_id):
+    """Show user profile."""
+    user = User.query.get_or_404(user_id)
+
+    if request.method == "POST":
+        place = request.form.get("place")
+        print(place)
+
+        url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query=restaurants+in+{place}&key={API_KEY}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            data = response.json()
+            restaurants = data.get("results", [])
+        else:
+            data = None
+            print(f"Error: {response.status_code}")
+        return render_template("user_profile.html", restaurants=restaurants, user=user)
+
+    return render_template('user_profile.html', user=user)
+
+
 
 
     
