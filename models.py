@@ -172,6 +172,8 @@ class Restaurant(db.Model):
 
     reviews = db.relationship('Review', backref= 'restaurant')
 
+    __table_args__ = (db.UniqueConstraint('name', 'address', name='_name_address_uc'),)
+
 
 class Favorites(db.Model):
     """User's favorite restaurants"""

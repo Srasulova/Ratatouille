@@ -17,11 +17,44 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
+# app.config['DEBUG'] = True
 toolbar = DebugToolbarExtension(app)
 
 
 CURR_USER_KEY = 'curr_user'
 API_KEY = "AIzaSyDQaQ4Zi8e-5YKSb_9VJvkKns3uYoq435g"
+
+# csrf.init_app(app)
+
+
+def fetch_restaurants(place, api_key):
+    url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query=restaurants+in+{place}&key={api_key}"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        data = response.json()
+        restaurants = data.get("results", [])
+    else:
+        print(f"Error: {response.status_code}")
+        restaurants = []
+
+    return restaurants
+
+def get_restaurants_from_request():
+    place = request.form.get("place")
+    if place:
+        return fetch_restaurants(place, API_KEY)
+    return []
+
+
+def save_restaurant_to_db(name, address):
+    """Save restaurant to the database if it doesn't already exist."""
+    restaurant = Restaurant.query.filter_by(name=name, address=address).first()
+    if not restaurant:
+        restaurant = Restaurant(name=name, address=address)
+        db.session.add(restaurant)
+        db.session.commit()
+    return restaurant
 
 # migrate = Migrate(app, db)
 
@@ -43,6 +76,7 @@ def add_user_to_g():
 
 def do_login(user):
     """Log in user"""
+    session.clear()
     session[CURR_USER_KEY] = user.id
 
 def do_logout():
@@ -83,15 +117,21 @@ def user_login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        user = User.authenticate(form.username.data, form.password.data)
+        username = form.username.data
+        password = form.password.data
+        print(f"Attempting to authenticate user: {username}")
+
+        user = User.authenticate(username, password)
 
         if user:
+            print(f"User authenticated: {user.username}")
             do_login(user)
             flash(f"Hello, {user.username}!")
             return redirect(f'/{user.id}')
         else:
+            print("Authentication failed")
             flash("Invalid credentials!")
-            return render_template('login.html', form = form)
+            return render_template('login.html', form=form)
 
     return render_template('login.html', form = form)
     
@@ -106,34 +146,172 @@ def logout():
     return redirect("/")
 
 
-
-
-@app.route('/<int:user_id>', methods=['GET','POST'])
+@app.route('/<int:user_id>', methods=['GET', 'POST'])
 def users_show(user_id):
     """Show user profile."""
     user = User.query.get_or_404(user_id)
 
+    restaurants = []
     if request.method == "POST":
         place = request.form.get("place")
-        print(place)
+        restaurants_data = fetch_restaurants(place, API_KEY)
 
-        url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query=restaurants+in+{place}&key={API_KEY}"
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            data = response.json()
-            restaurants = data.get("results", [])
-        else:
-            data = None
-            print(f"Error: {response.status_code}")
-        return render_template("user_profile.html", restaurants=restaurants, user=user)
-
-    return render_template('user_profile.html', user=user)
+        for restaurant_data in restaurants_data:
+            name = restaurant_data.get("name")
+            address = restaurant_data.get("formatted_address")
+            restaurant = save_restaurant_to_db(name, address)
+            restaurants.append(restaurant)
+            
+    return render_template("user_profile.html", restaurants=restaurants, user=user)
 
 
 
 
-    
+# Add restaurants to wishlist, favorites and visited:
+
+@app.route('/add_favorite/<int:restaurant_id>', methods=["POST"])
+def toggle_favorite(restaurant_id):
+    if not g.user:
+        flash("Access unauthorized.")
+        return redirect("/")
+
+    # Fetch or create the restaurant
+    restaurant = Restaurant.query.get(restaurant_id)
+
+    if not restaurant:
+        flash("Restaurant not found.")
+        return redirect(f'/{g.user.id}')
+
+    favorite = Favorites.query.filter_by(user_id=g.user.id, restaurant_id=restaurant_id).first()
+
+    if favorite:
+        db.session.delete(favorite)
+        db.session.commit()
+        flash("Removed from favorites.")
+    else:
+        new_favorite = Favorites(user_id=g.user.id, restaurant_id=restaurant_id)
+        db.session.add(new_favorite)
+        db.session.commit()
+        flash("Added to favorites.")
+
+    return redirect(f'/{g.user.id}')
+
+
+@app.route('/add_wishlist/<int:restaurant_id>', methods=["POST"])
+def toggle_wishlist(restaurant_id):
+    if not g.user:
+        flash("Access unauthorized.")
+        return redirect("/")
+
+    # Fetch or create the restaurant
+    restaurant = Restaurant.query.get(restaurant_id)
+
+    if not restaurant:
+        flash("Restaurant not found.")
+        return redirect(f'/{g.user.id}')
+
+    wishlist = WishlistRestaurants.query.filter_by(user_id=g.user.id, restaurant_id=restaurant_id).first()
+
+    if wishlist:
+        db.session.delete(wishlist)
+        db.session.commit()
+        flash("Removed from wishlist.")
+    else:
+        new_wishlist = WishlistRestaurants(user_id=g.user.id, restaurant_id=restaurant_id)
+        db.session.add(new_wishlist)
+        db.session.commit()
+        flash("Added to wishlists.")
+
+    return redirect(f'/{g.user.id}')
+
+
+@app.route('/add_visited/<int:restaurant_id>', methods=["POST"])
+def toggle_visited(restaurant_id):
+    if not g.user:
+        flash("Access unauthorized.")
+        return redirect("/")
+
+    # Fetch or create the restaurant
+    restaurant = Restaurant.query.get(restaurant_id)
+
+    if not restaurant:
+        flash("Restaurant not found.")
+        return redirect(f'/{g.user.id}')
+
+    visited = VisitedRestaurants.query.filter_by(user_id=g.user.id, restaurant_id=restaurant_id).first()
+
+    if visited:
+        db.session.delete(visited)
+        db.session.commit()
+        flash("Removed from visited.")
+    else:
+        new_visited = VisitedRestaurants(user_id=g.user.id, restaurant_id=restaurant_id)
+        db.session.add(new_visited)
+        db.session.commit()
+        flash("Added to wishlists.")
+
+    return redirect(f'/{g.user.id}')
+
+
+
+# Follow routes:
+
+@app.route('/<int:user_id>/following')
+def show_following(user_id):
+    """Show list of people this user is following."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect('/')
+
+    user = User.query.get_or_404(user_id)
+    return render_template('following.html', user=user)
+
+
+@app.route('/<int:user_id>/followers')
+def users_followers(user_id):
+    """Show list of followers of this user."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    user = User.query.get_or_404(user_id)
+    return render_template('/followers.html', user=user)
+
+
+@app.route('/follow/<int:follow_id>', methods=['POST'])
+def add_follow(follow_id):
+    """Add a follow for the currently-logged-in user."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    followed_user = User.query.get_or_404(follow_id)
+    g.user.following.append(followed_user)
+    db.session.commit()
+
+    return redirect(f"/{g.user.id}/following")
+
+
+@app.route('/stop-following/<int:follow_id>', methods=['POST'])
+def stop_following(follow_id):
+    """Have currently-logged-in-user stop following this user."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    followed_user = User.query.get(follow_id)
+    g.user.following.remove(followed_user)
+    db.session.commit()
+
+    return redirect(f"/{g.user.id}/following")
+
+
+
+
 
 
 
@@ -153,33 +331,14 @@ def add_header(req):
     return req
 
 
-#   if request.method == "POST":
-#         place = request.form.get("place")
-#         print(place)
-
-#         url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query=restaurants+in+{place}&key={API_KEY}"
-#         response = requests.get(url)
-
-#         if response.status_code == 200:
-#             data = response.json()
-#             restaurants = data.get("results", [])
-#             # print(len(restaurants))
-#             # print(data)
-#         else:
-#             data = None
-#             print(f"Error: {response.status_code}")
-        
-        
-#         return render_template("base.html", restaurants=restaurants)
 
 
+# @app.route('/<int:user_id>', methods=['GET','POST'])
+# def users_show(user_id):
+#     """Show user profile."""
+#     user = User.query.get_or_404(user_id)
 
-
-
-# headers = {
-# 	"X-RapidAPI-Key": "185e7691e2mshec908b70aabf7cdp11a97cjsn86e7c3c53f7f",
-# 	"X-RapidAPI-Host": "restaurants-near-me-usa.p.rapidapi.com"
-# }
-
-# url = f"https://restaurants-near-me-usa.p.rapidapi.com/restaurants/location/zipcode/{zipcode}/0"
-# response = requests.get(url, headers=headers)
+#     restaurants = []
+#     if request.method == "POST":
+#         restaurants = get_restaurants_from_request()
+#     return render_template("user_profile.html", restaurants=restaurants, user=user)
