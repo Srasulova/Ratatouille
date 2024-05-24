@@ -74,7 +74,7 @@ def signup():
             return render_template('signup.html', form=form)
         do_login(user)
 
-        return redirect('/home')
+        return redirect(f'/{user.id}')
     return render_template('signup.html', form=form)
 
 
@@ -88,7 +88,7 @@ def user_login():
         if user:
             do_login(user)
             flash(f"Hello, {user.username}!")
-            return redirect('/home')
+            return redirect(f'/{user.id}')
         else:
             flash("Invalid credentials!")
             return render_template('login.html', form = form)
@@ -106,11 +106,6 @@ def logout():
     return redirect("/")
 
 
-@app.route('/home')
-def user_home():
-    """Show user's home page"""
-
-    return render_template('home.html')
 
 
 @app.route('/<int:user_id>', methods=['GET','POST'])
