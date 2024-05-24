@@ -1,4 +1,4 @@
-{% extends 'base.html' %} {% block home_anon %}
+{% extends "base.html" %} {% block home_anon %}
 
 <div>
   <div class="relative isolate">
@@ -136,7 +136,6 @@
   </div>
 </div>
 
-{% block signup %} {% endblock %} {% block login %} {% endblock %} {% endblock
-%}
+<div id="signup-form-container" class="">{% block signup %} {% endblock %}</div>
 
-<!-- {% if not g.user %} {% endif %} -->
+{% endblock home_anon %}

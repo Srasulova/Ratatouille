@@ -21,6 +21,7 @@ toolbar = DebugToolbarExtension(app)
 
 
 CURR_USER_KEY = 'curr_user'
+API_KEY = "AIzaSyDQaQ4Zi8e-5YKSb_9VJvkKns3uYoq435g"
 
 # migrate = Migrate(app, db)
 
@@ -50,42 +51,48 @@ def do_logout():
         del session[CURR_USER_KEY]
 
 
-
-API_KEY = "AIzaSyDQaQ4Zi8e-5YKSb_9VJvkKns3uYoq435g"
-
-
 #Homepage route
 
 @app.route('/', methods = ['GET', 'POST'])
 def homepage():
     """Show homepage and display the signup or login form based on user interaction"""  
-    signup_form = UserAddForm()
-    login_form = LoginForm()
+    return render_template('home_anon.html')
 
-    if request.method == 'POST':
-        form_type = request.form.get('form_type')
-        if form_type == 'signup' and signup_form.validate_on_submit():
-            try:
-                user = User.signup(username = signup_form.username.data, password = signup_form.password.data, email= signup_form.email.data, image_url= signup_form.image_url.data or User.image_url.default.arg)
-                db.session.commit()
-            except IntegrityError:
-                flash("This username already exists! So many foodies think alike. Try another one!")
-                return render_template('base.html', signup_form=signup_form, login_form=login_form)
+    
+@app.route('/signup', methods = ['GET', 'POST'])
+def signup():
+    form = UserAddForm()
+
+    if form.validate_on_submit():
+        try:
+            user = User.signup(username = form.username.data, password = form.password.data, email= form.email.data, image_url= form.image_url.data or User.image_url.default.arg)
+            db.session.commit()
+        except IntegrityError:
+            flash("This username already exists! So many foodies think alike. Try another one!")
+            return render_template('signup.html', form=form)
+        do_login(user)
+
+        return redirect('home.html')
+    return render_template('signup.html', form=form)
+
+
+@app.route('/login', methods = ['GET', 'POST'])
+def user_login():
+    form = LoginForm()
+    
+    if form.validate_on_submit():
+        user = User.authenticate(form.username.data, form.password.data)
+
+        if user:
             do_login(user)
-
+            flash(f"Hello, {user.username}!")
             return redirect('home.html')
-        elif form_type == 'login' and login_form.validate_on_submit():
-            user = User.authenticate(login_form.username.data, login_form.password.data)
+        else:
+            flash("Invalid credentials!")
+            return render_template('login.html', form = form)
 
-            if user:
-                do_login(user)
-                flash(f"Hello, {user.username}!")
-                return redirect('home.html')
-            else:
-                flash("Invalid credentials!")
-                return render_template('base.html', signup_form=signup_form, login_form=login_form)
-        
-    return render_template('base.html', signup_form=signup_form, login_form=login_form)
+    return render_template('login.html', form = form)
+    
 
 
 @app.route('/logout')
@@ -98,7 +105,7 @@ def logout():
 
 
 @app.route('/home')
-def user_profile():
+def user_home():
     return render_template('home.html')
 
 
