@@ -196,6 +196,8 @@ class Favorites(db.Model):
  
     )
 
+    restaurant = db.relationship('Restaurant', backref='favorited_by')
+
 
 class WishlistRestaurants(db.Model):
     """User's wishlist restaurants"""
@@ -217,6 +219,8 @@ class WishlistRestaurants(db.Model):
         db.ForeignKey('restaurants.id', ondelete='cascade')
     )
 
+    restaurant = db.relationship('Restaurant', backref='wishlisted_by')
+
 
 class VisitedRestaurants(db.Model):
     """User's visited restaurants"""
@@ -237,6 +241,8 @@ class VisitedRestaurants(db.Model):
         db.Integer,
         db.ForeignKey('restaurants.id', ondelete='cascade')
     )
+
+    restaurant = db.relationship('Restaurant', backref='visited_by')
 
 
 class Review(db.Model):

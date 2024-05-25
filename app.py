@@ -253,6 +253,28 @@ def toggle_visited(restaurant_id):
     return redirect(f'/{g.user.id}')
 
 
+@app.route('/my_lists/<int:user_id>')
+def show_my_lists(user_id):
+    """Show user's lists of favorite, wishlisted and visited restaurants"""
+    user = User.query.get_or_404(user_id)
+
+    favorites = Favorites.query.filter_by(user_id=user.id).all()
+    wishlisted = WishlistRestaurants.query.filter_by(user_id=user.id).all()
+    visited = VisitedRestaurants.query.filter_by(user_id=user.id).all()
+
+    for favorite in favorites:
+        print(f"Favorite Restaurant: {favorite.restaurant.name}")
+
+    for wish in wishlisted:
+        print(f"Wishlisted Restaurant: {wish.restaurant.name}")
+
+    for visit in visited:
+        print(f"Visited Restaurant: {visit.restaurant.name}")
+
+    print(f"{user.username}")
+
+    return render_template("my_lists.html", user=user, favorites = favorites, visited = visited, wishlisted = wishlisted)
+
 
 # Follow routes:
 
