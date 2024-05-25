@@ -245,7 +245,74 @@ def toggle_visited(restaurant_id):
     return redirect(f'/{g.user.id}')
 
 
-@app.route('/page_my_lists/<int:user_id>')
+# Delete from wishlist, favorites and visited restaurants
+
+@app.route('/delete_visited/<int:restaurant_id>', methods=["POST"])
+def delete_visited(restaurant_id):
+    if not g.user:
+        flash("Access unauthorized.")
+        return redirect("/")
+
+    restaurant = Restaurant.query.get(restaurant_id)
+
+    if not restaurant:
+        flash("Restaurant not found.")
+        return redirect(f'/{g.user.id}')
+
+    visited = VisitedRestaurants.query.filter_by(user_id=g.user.id, restaurant_id=restaurant_id).first()
+
+    if visited:
+        db.session.delete(visited)
+        db.session.commit()
+        flash("Removed from visited.")
+    return redirect(f'/my_lists/{g.user.id}')
+
+
+@app.route('/delete_wishlist/<int:restaurant_id>', methods=["POST"])
+def delete_wishlist(restaurant_id):
+    if not g.user:
+        flash("Access unauthorized.")
+        return redirect("/")
+
+    restaurant = Restaurant.query.get(restaurant_id)
+
+    if not restaurant:
+        flash("Restaurant not found.")
+        return redirect(f'/{g.user.id}')
+
+    wishlist = WishlistRestaurants.query.filter_by(user_id=g.user.id, restaurant_id=restaurant_id).first()
+
+    if wishlist:
+        db.session.delete(wishlist)
+        db.session.commit()
+        flash("Removed from wishlist.")
+    return redirect(f'/my_lists/{g.user.id}')
+
+
+@app.route('/delete_favorite/<int:restaurant_id>', methods=["POST"])
+def delete_favorite(restaurant_id):
+    if not g.user:
+        flash("Access unauthorized.")
+        return redirect("/")
+
+    restaurant = Restaurant.query.get(restaurant_id)
+
+    if not restaurant:
+        flash("Restaurant not found.")
+        return redirect(f'/{g.user.id}')
+
+    favorite = Favorites.query.filter_by(user_id=g.user.id, restaurant_id=restaurant_id).first()
+
+    if favorite:
+        db.session.delete(favorite)
+        db.session.commit()
+        flash("Removed from favorites.")
+    return redirect(f'/my_lists/{g.user.id}')
+
+
+
+# Show all user's lists
+@app.route('/my_lists/<int:user_id>')
 def show_my_lists(user_id):
     """Show user's lists of favorite, wishlisted and visited restaurants"""
     user = User.query.get_or_404(user_id)
@@ -255,6 +322,19 @@ def show_my_lists(user_id):
     visited = VisitedRestaurants.query.filter_by(user_id=user.id).all()
     
     return render_template("page_my_lists.html", user = user, favorites = favorites, visited = visited, wishlisted = wishlisted )
+
+
+# Show all the restaurants suggested to user
+@app.route('/my_restaurants/<int:user_id>')
+def show_my_restaurants(user_id):
+    """Show user's lists of favorite, wishlisted and visited restaurants"""
+    user = User.query.get_or_404(user_id)
+
+    restaurants = Restaurant.query.filter_by(user_id=g.user.id).all()
+
+    return render_template("page_my_restaurants.html", user = user, restaurants = restaurants )
+
+
 
 
 
