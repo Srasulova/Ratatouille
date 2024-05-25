@@ -1,4 +1,4 @@
-{% extends 'home.html' %} {% block user_lists %}
+{% extends "home.html" %} {% block content %}
 
 <!-- Wishlisted restaurants -->
 
@@ -18,7 +18,7 @@
           <!-- Wishlist/ heart icon -->
 
           <form
-            action="{{ url_for('toggle_wishlist', restaurant_id=restaurant.id) }}"
+            action="{{ url_for('toggle_wishlist', restaurant_id=wish.restaurant.id) }}"
             method="POST"
           >
             <button type="submit" class="bg-transparent border-0">
@@ -40,9 +40,9 @@
           </form>
         </div>
 
-        <ol>
+        <!-- <ol>
           {% for review in restaurant_reviews %} {{review}} {% endfor %}
-        </ol>
+        </ol> -->
       </li>
 
       {% endfor %}
@@ -69,7 +69,7 @@
           <!-- Visited place/location  icon -->
 
           <form
-            action="{{ url_for('toggle_visited', restaurant_id=restaurant.id) }}"
+            action="{{ url_for('toggle_visited', restaurant_id=visit.restaurant.id) }}"
             method="POST"
           >
             <button type="submit" class="bg-transparent border-0">
@@ -90,9 +90,9 @@
           </form>
         </div>
 
-        <ol>
+        <!-- <ol>
           {% for review in restaurant_reviews %} {{review}} {% endfor %}
-        </ol>
+        </ol> -->
       </li>
 
       {% endfor %}
@@ -118,7 +118,7 @@
         >
           <!-- Favorite/thumbs up icon  -->
           <form
-            action="{{ url_for('toggle_favorite', restaurant_id=restaurant.id) }}"
+            action="{{ url_for('toggle_favorite', restaurant_id=fav.restaurant.id) }}"
             method="POST"
           >
             <button type="submit" class="bg-transparent border-0">
@@ -140,9 +140,9 @@
           </form>
         </div>
 
-        <ol>
+        <!-- <ol>
           {% for review in restaurant_reviews %} {{review}} {% endfor %}
-        </ol>
+        </ol> -->
       </li>
 
       {% endfor %}

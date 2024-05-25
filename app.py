@@ -90,9 +90,10 @@ def do_logout():
 @app.route('/')
 def homepage():
     """Show homepage and display the signup or login form based on user interaction"""  
+
     if not g.user:
         return render_template('home_anon.html')
-    return render_template("home.html")
+    return redirect(f'/{g.user.id}')
 
     
 @app.route('/signup', methods = ['GET', 'POST'])
@@ -119,18 +120,14 @@ def user_login():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        print(f"Attempting to authenticate user: {username}")
 
         user = User.authenticate(username, password)
 
         if user:
-            print(f"User authenticated: {user.username}")
             do_login(user)
             flash(f"Hello, {user.username}!")
             return redirect(f'/{user.id}')
         else:
-            print("Authentication failed")
-            flash("Invalid credentials!")
             return render_template('login.html', form=form)
 
     return render_template('login.html', form = form)
@@ -162,9 +159,7 @@ def users_show(user_id):
             restaurant = save_restaurant_to_db(name, address)
             restaurants.append(restaurant)
             
-    return render_template("user_profile.html", restaurants=restaurants, user=user)
-
-
+    return render_template("page_user_profile.html", restaurants=restaurants, user=user)
 
 
 # Add restaurants to wishlist, favorites and visited:
@@ -175,7 +170,6 @@ def toggle_favorite(restaurant_id):
         flash("Access unauthorized.")
         return redirect("/")
 
-    # Fetch or create the restaurant
     restaurant = Restaurant.query.get(restaurant_id)
 
     if not restaurant:
@@ -203,7 +197,6 @@ def toggle_wishlist(restaurant_id):
         flash("Access unauthorized.")
         return redirect("/")
 
-    # Fetch or create the restaurant
     restaurant = Restaurant.query.get(restaurant_id)
 
     if not restaurant:
@@ -231,7 +224,6 @@ def toggle_visited(restaurant_id):
         flash("Access unauthorized.")
         return redirect("/")
 
-    # Fetch or create the restaurant
     restaurant = Restaurant.query.get(restaurant_id)
 
     if not restaurant:
@@ -253,7 +245,7 @@ def toggle_visited(restaurant_id):
     return redirect(f'/{g.user.id}')
 
 
-@app.route('/my_lists/<int:user_id>')
+@app.route('/page_my_lists/<int:user_id>')
 def show_my_lists(user_id):
     """Show user's lists of favorite, wishlisted and visited restaurants"""
     user = User.query.get_or_404(user_id)
@@ -261,75 +253,10 @@ def show_my_lists(user_id):
     favorites = Favorites.query.filter_by(user_id=user.id).all()
     wishlisted = WishlistRestaurants.query.filter_by(user_id=user.id).all()
     visited = VisitedRestaurants.query.filter_by(user_id=user.id).all()
-
-    for favorite in favorites:
-        print(f"Favorite Restaurant: {favorite.restaurant.name}")
-
-    for wish in wishlisted:
-        print(f"Wishlisted Restaurant: {wish.restaurant.name}")
-
-    for visit in visited:
-        print(f"Visited Restaurant: {visit.restaurant.name}")
-
-    print(f"{user.username}")
-
-    return render_template("my_lists.html", user=user, favorites = favorites, visited = visited, wishlisted = wishlisted)
+    
+    return render_template("page_my_lists.html", user = user, favorites = favorites, visited = visited, wishlisted = wishlisted )
 
 
-# Follow routes:
-
-@app.route('/<int:user_id>/following')
-def show_following(user_id):
-    """Show list of people this user is following."""
-
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect('/')
-
-    user = User.query.get_or_404(user_id)
-    return render_template('following.html', user=user)
-
-
-@app.route('/<int:user_id>/followers')
-def users_followers(user_id):
-    """Show list of followers of this user."""
-
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
-
-    user = User.query.get_or_404(user_id)
-    return render_template('/followers.html', user=user)
-
-
-@app.route('/follow/<int:follow_id>', methods=['POST'])
-def add_follow(follow_id):
-    """Add a follow for the currently-logged-in user."""
-
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
-
-    followed_user = User.query.get_or_404(follow_id)
-    g.user.following.append(followed_user)
-    db.session.commit()
-
-    return redirect(f"/{g.user.id}/following")
-
-
-@app.route('/stop-following/<int:follow_id>', methods=['POST'])
-def stop_following(follow_id):
-    """Have currently-logged-in-user stop following this user."""
-
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
-
-    followed_user = User.query.get(follow_id)
-    g.user.following.remove(followed_user)
-    db.session.commit()
-
-    return redirect(f"/{g.user.id}/following")
 
 
 
