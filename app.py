@@ -60,10 +60,7 @@ def save_restaurant_to_db(name, address):
 
 with app.app_context():
    connect_db(app)
-
-with app.app_context():
-    db.create_all()
-
+   db.create_all()
 
 @app.before_request
 def add_user_to_g():

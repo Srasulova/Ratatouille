@@ -6,6 +6,7 @@ from datetime import datetime
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from sqlalchemy import Column, ForeignKey, Table
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -91,6 +92,8 @@ class User(db.Model):
         primaryjoin=(Follows.user_following_id == id),
         secondaryjoin=(Follows.user_being_followed_id == id)
     )
+
+    
 
     reviews = db.relationship('Review', backref = "user" )
 
@@ -279,7 +282,23 @@ class Review(db.Model):
 
     # user = db.relationship('User', backref='user_reviews')
 
+class UserRestaurants(db.Model):
+    """Mapping of an emp."""
+    
+    __tablename__ = "user_restaurants"
 
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id', ondelete='cascade'),
+        primary_key=True
+    )
+
+    restaurant_id = db.Column(
+        db.Integer,
+        db.ForeignKey('restaurants.id', ondelete='cascade'),
+        primary_key=True
+    )
+    
 
 def connect_db(app):
     """Connect this db to provide Flask app"""
@@ -287,10 +306,6 @@ def connect_db(app):
     db.app = app
     db.init_app(app)
 
-    #Seed database if no records are present in the User, Restaurant or Review table
-
-    # if len(User.query.all()) == 0 or len(Restaurant.query.all()) == 0 or len(Review.query.all()) == 0 or len(WishlistRestaurants.query.all()) == 0 or len(VisitedRestaurants.query.all()) == 0 or len(Favorites.query.all()) == 0:
-    #     db.drop_all()
-    #     db.create_all()
+  
 
     
