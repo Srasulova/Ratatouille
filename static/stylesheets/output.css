@@ -909,6 +909,11 @@ select {
   height: 1.5rem;
 }
 
+.size-7 {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
 .h-16 {
   height: 4rem;
 }

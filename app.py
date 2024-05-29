@@ -40,13 +40,6 @@ def fetch_restaurants(place, api_key):
 
     return restaurants
 
-def get_restaurants_from_request():
-    place = request.form.get("place")
-    if place:
-        return fetch_restaurants(place, API_KEY)
-    return []
-
-
 def save_restaurant_to_db(name, address):
     """Save restaurant to the database if it doesn't already exist."""
     restaurant = Restaurant.query.filter_by(name=name, address=address).first()
@@ -329,8 +322,6 @@ def show_my_restaurants(user_id):
 
     user = User.query.get_or_404(user_id)
 
-    # restaurants = Restaurant.query.all()
-
     place = user.location
     suggested_restaurants = fetch_restaurants(place, API_KEY)
 
@@ -346,7 +337,7 @@ def show_my_restaurants(user_id):
 
     my_places = UserRestaurants.query.filter_by(user_id = user.id).all()
 
-    return render_template("page_my_restaurants.html", user = user, my_places = my_places)
+    return render_template("page_my_restaurants.html", user = user, my_places = my_places)                                     
 
 
 
