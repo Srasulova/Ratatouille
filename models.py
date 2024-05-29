@@ -63,6 +63,7 @@ class User(db.Model):
 
     location = db.Column(
         db.Text,
+        default="06610",
     )
 
     password = db.Column(
@@ -298,6 +299,8 @@ class UserRestaurants(db.Model):
         db.ForeignKey('restaurants.id', ondelete='cascade'),
         primary_key=True
     )
+
+    restaurant = db.relationship('Restaurant', backref='my_places')
     
 
 def connect_db(app):

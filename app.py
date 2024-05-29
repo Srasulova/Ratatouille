@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g, 
 from flask_debugtoolbar import DebugToolbarExtension
 import os
 import requests
-from models import db, connect_db, User, Restaurant, VisitedRestaurants, WishlistRestaurants, Favorites, Review
+from models import db, connect_db, User, Restaurant, VisitedRestaurants, WishlistRestaurants, Favorites, Review, UserRestaurants
 from sqlalchemy.exc import IntegrityError
 from forms import UserAddForm, UserEditForm, LoginForm, ReviewForm
 from flask_bcrypt import Bcrypt
@@ -55,6 +55,7 @@ def save_restaurant_to_db(name, address):
         db.session.add(restaurant)
         db.session.commit()
     return restaurant
+
 
 # migrate = Migrate(app, db)
 
@@ -324,12 +325,28 @@ def show_my_lists(user_id):
 # Show all the restaurants suggested to user
 @app.route('/my_restaurants/<int:user_id>')
 def show_my_restaurants(user_id):
-    """Show user's lists of favorite, wishlisted and visited restaurants"""
+    """Show the list of the restaurants close to the user based on their location"""
+
     user = User.query.get_or_404(user_id)
 
-    restaurants = Restaurant.query.filter_by(user_id=g.user.id).all()
+    # restaurants = Restaurant.query.all()
 
-    return render_template("page_my_restaurants.html", user = user, restaurants = restaurants )
+    place = user.location
+    suggested_restaurants = fetch_restaurants(place, API_KEY)
+
+    names = [restaurant.get("name") for restaurant in suggested_restaurants]
+
+    suggestions = Restaurant.query.filter(Restaurant.name.in_(names)).all()
+
+    for restaurant in suggestions:
+        if not restaurant:
+            new_suggestion = UserRestaurants(user_id = user.id, restaurant_id = restaurant.id)
+            db.session.add(new_suggestion)
+            db.session.commit()
+
+    my_places = UserRestaurants.query.filter_by(user_id = user.id).all()
+
+    return render_template("page_my_restaurants.html", user = user, my_places = my_places)
 
 
 
