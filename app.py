@@ -139,23 +139,16 @@ def users_show(user_id):
     """Show user profile."""
     user = User.query.get_or_404(user_id)
 
-    restaurants = []
-    if request.method == "POST":
-        place = request.form.get("place")
-        restaurants_data = fetch_restaurants(place, API_KEY)
-
-        for restaurant_data in restaurants_data:
-            name = restaurant_data.get("name")
-            address = restaurant_data.get("formatted_address")
-            restaurant = save_restaurant_to_db(name, address)
-            restaurants.append(restaurant)
+    favorites = Favorites.query.filter_by(user_id=user.id).all()
+    wishlisted = WishlistRestaurants.query.filter_by(user_id=user.id).all()
+    visited = VisitedRestaurants.query.filter_by(user_id=user.id).all()
             
-    return render_template("page_user_profile.html", restaurants=restaurants, user=user)
+    return render_template("page_user_profile.html", user=user, favorites = favorites, wishlisted = wishlisted, visited = visited)
 
 
 # Add restaurants to wishlist, favorites and visited:
 
-@app.route('/add_favorite/<int:restaurant_id>', methods=["POST"])
+@app.route('/add_favorite/<int:restaurant_id>', methods=["GET", "POST"])
 def toggle_favorite(restaurant_id):
     if not g.user:
         flash("Access unauthorized.")
@@ -337,12 +330,33 @@ def show_my_restaurants(user_id):
 
     my_places = UserRestaurants.query.filter_by(user_id = user.id).all()
 
-    return render_template("page_my_restaurants.html", user = user, my_places = my_places)                                     
+    return render_template("page_my_restaurants.html", user = user, my_places = my_places)    
+
+
+@app.route('/search_restaurant/<int:user_id>', methods=["GET", "POST"])
+def show_search_restaurants(user_id):
+    """Show a search bar and the search result"""
+    user = User.query.get_or_404(user_id)
+    restaurants = []
+    if request.method == "POST":
+        place = request.form.get("place")
+        restaurants_data = fetch_restaurants(place, API_KEY)
+
+        for restaurant_data in restaurants_data:
+            name = restaurant_data.get("name")
+            address = restaurant_data.get("formatted_address")
+            restaurant = save_restaurant_to_db(name, address)
+            restaurants.append(restaurant)
+    
+    return render_template("page_search_restaurant.html", user = user, restaurants = restaurants)
+            
+            
+    
 
 
 
 
-
+  
 
 
 
