@@ -143,7 +143,7 @@ def users_show(user_id):
     wishlisted = WishlistRestaurants.query.filter_by(user_id=user.id).all()
     visited = VisitedRestaurants.query.filter_by(user_id=user.id).all()
 
-    print(user.location)
+    # print(user.location)
             
     return render_template("page_user_profile.html", user=user, favorites = favorites, wishlisted = wishlisted, visited = visited)
 
@@ -320,19 +320,32 @@ def show_my_restaurants(user_id):
     place = user.location
     suggested_restaurants = fetch_restaurants(place, API_KEY)
 
+    for restaurant in suggested_restaurants:
+        name = restaurant.get("name")
+        address = restaurant.get("formatted_address")
+        restaurant = save_restaurant_to_db(name, address)
+
     names = [restaurant.get("name") for restaurant in suggested_restaurants]
 
     suggestions = Restaurant.query.filter(Restaurant.name.in_(names)).all()
 
     for restaurant in suggestions:
-        if not restaurant:
+        sugg_restaurant = UserRestaurants.query.filter_by(restaurant_id = restaurant.id).first()
+
+        if not sugg_restaurant:
             new_suggestion = UserRestaurants(user_id = user.id, restaurant_id = restaurant.id)
             db.session.add(new_suggestion)
             db.session.commit()
-
     my_places = UserRestaurants.query.filter_by(user_id = user.id).all()
 
     return render_template("page_my_restaurants.html", user = user, my_places = my_places)    
+
+
+# 1. get all the restaurants based on the user's location
+# 2. add them to the restaurants table if the restaurant is not there
+# 3. add those suggested restaurants(only) to the UserRestaurants table if not there yet
+# 4. put empty array(user_suggested_restaurants) and append them into that array. in render_template pass that variable as my_places
+# 5. compare the names in the array with UserRestaurant table and get the names of restaurants other than in suggestions. Put them in "previously suggested to you" section
 
 
 @app.route('/search_restaurant/<int:user_id>', methods=["GET", "POST"])
@@ -354,15 +367,19 @@ def show_search_restaurants(user_id):
             
             
     
+# @app.route('/<int:user_id>', methods=['GET','POST'])
+# def users_show(user_id):
+#     """Show user profile."""
+#     user = User.query.get_or_404(user_id)
 
+#     restaurants = []
+#     if request.method == "POST":
+#         restaurants = get_restaurants_from_request()
+#     return render_template("user_profile.html", restaurants=restaurants, user=user)
 
 
 
   
-
-
-
-
 
 
 
@@ -383,12 +400,3 @@ def add_header(req):
 
 
 
-# @app.route('/<int:user_id>', methods=['GET','POST'])
-# def users_show(user_id):
-#     """Show user profile."""
-#     user = User.query.get_or_404(user_id)
-
-#     restaurants = []
-#     if request.method == "POST":
-#         restaurants = get_restaurants_from_request()
-#     return render_template("user_profile.html", restaurants=restaurants, user=user)

@@ -63,7 +63,7 @@ class User(db.Model):
 
     location = db.Column(
         db.Text,
-        default="06610",
+        default="643 Pearl Harbor str, Bridgeport, CT",
     )
 
     password = db.Column(
