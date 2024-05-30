@@ -1,45 +1,8 @@
 {% extends "base.html" %} {% block content %}
 
-<!-- Wishlisted restaurants -->
+<div class="max-w-5xl mx-auto">
 
-<div class="w-full">
-  {% if wishlisted %}
-  <div class="mx-auto w-full inline-flex items-center flex-col">
-    <h3 class="text-2xl font-bold text-lime-700 mb-4">
-      Restaurants in your wish list
-    </h3>
-    <ul class="">
-      {% for wish in wishlisted %}
-      <li class="text-lg font-medium text-gray-900 flex items-center py-2">
-        {{ wish.restaurant.name }}
-        <div
-          class="svg-elements flex space-x-2 items-center justify-center ml-8"
-        >
-          <!-- Wishlist/ heart icon -->
-
-          <form
-            action="{{ url_for('delete_wishlist', restaurant_id=wish.restaurant.id) }}"
-            method="POST"
-          >
-            <button type="submit" class="bg-transparent border-0">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-              </svg>
-              
-            </button>
-          </form>
-        </div>
-
-       
-      </li>
-
-      {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
-</div>
-
-<!-- Visited restaurants -->
+  <!-- Visited restaurants -->
 
 <div class="w-full">
   {% if visited %}
@@ -70,6 +33,46 @@
         </div>
 
     
+      </li>
+
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</div>
+
+<div class="flex space-x-8 mt-10">
+  <!-- Wishlisted restaurants -->
+
+<div class="w-full ">
+  {% if wishlisted %}
+  <div class="mx-auto w-full inline-flex items-center flex-col">
+    <h3 class="text-2xl font-bold text-lime-700 mb-4">
+      Restaurants in your wish list
+    </h3>
+    <ul class="">
+      {% for wish in wishlisted %}
+      <li class="text-lg font-medium text-gray-900 flex items-center py-2">
+        {{ wish.restaurant.name }}
+        <div
+          class="svg-elements flex space-x-2 items-center justify-center ml-8"
+        >
+          <!-- Wishlist/ heart icon -->
+
+          <form
+            action="{{ url_for('delete_wishlist', restaurant_id=wish.restaurant.id) }}"
+            method="POST"
+          >
+            <button type="submit" class="bg-transparent border-0">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+              
+            </button>
+          </form>
+        </div>
+
+       
       </li>
 
       {% endfor %}
@@ -113,5 +116,12 @@
   </div>
   {% endif %}
 </div>
+</div>
+
+</div>
+
+
+
+
 
 {% endblock %}

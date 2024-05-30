@@ -142,6 +142,8 @@ def users_show(user_id):
     favorites = Favorites.query.filter_by(user_id=user.id).all()
     wishlisted = WishlistRestaurants.query.filter_by(user_id=user.id).all()
     visited = VisitedRestaurants.query.filter_by(user_id=user.id).all()
+
+    print(user.location)
             
     return render_template("page_user_profile.html", user=user, favorites = favorites, wishlisted = wishlisted, visited = visited)
 

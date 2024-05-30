@@ -58,6 +58,12 @@
       </div>
     </div>
 
+    <!-- User's location -->
+
+    <div>
+      <p>{{ user.location }}</p>
+    </div>
+
     <p class="mt-4 text-base leading-7 text-gray-600">
       Praesentium iure error aliquam voluptas ut libero. Commodi placeat sit
       iure nulla officiis. Ut ex sit repellat tempora. Qui est accusamus
@@ -78,10 +84,8 @@
 
   <div class="w-full flex flex-col">
     <p class="text-center text-orange-600 font-bold text-2xl">Some of your restaurant lists</p>
-    
 
-        <!-- Visited restaurants -->
-    
+        <!-- Visited restaurants -->   
         <div class="w-full">
           {% if visited %}
           <div class="mx-auto w-full inline-flex items-center flex-col mt-10">
@@ -117,7 +121,6 @@
 
         <div class="flex space-x-6 mt-8">
     <!-- Wishlisted restaurants -->
-
     <div class="w-full">
       {% if wishlisted %}
       <div class="mx-auto w-full inline-flex items-center flex-col">
@@ -151,7 +154,6 @@
     </div>
 
        <!-- Favorite restaurants -->
-    
        <div class="w-full">
         {% if favorites %}
         <div class="mx-auto w-full inline-flex items-center flex-col">
