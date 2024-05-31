@@ -93,7 +93,7 @@ def signup():
 
     if form.validate_on_submit():
         try:
-            user = User.signup(username = form.username.data, password = form.password.data, email= form.email.data, image_url= form.image_url.data or User.image_url.default.arg)
+            user = User.signup(username = form.username.data, password = form.password.data, email= form.email.data, image_url= form.image_url.data or User.image_url.default.arg, location = form.location.data or User.location.default.arg)
             db.session.commit()
         except IntegrityError:
             flash("This username already exists! So many foodies think alike. Try another one!")
@@ -138,6 +138,10 @@ def logout():
 def users_show(user_id):
     """Show user profile."""
     user = User.query.get_or_404(user_id)
+
+    form = UserEditForm()
+
+    
 
     favorites = Favorites.query.filter_by(user_id=user.id).all()
     wishlisted = WishlistRestaurants.query.filter_by(user_id=user.id).all()
@@ -317,26 +321,44 @@ def show_my_restaurants(user_id):
 
     user = User.query.get_or_404(user_id)
 
-    place = user.location
-    suggested_restaurants = fetch_restaurants(place, API_KEY)
+    # print(f"User: {user}")
+    # print(f"User Location: {user.location}")
 
-    for restaurant in suggested_restaurants:
-        name = restaurant.get("name")
-        address = restaurant.get("formatted_address")
-        restaurant = save_restaurant_to_db(name, address)
+    # place = user.location
+    # suggested_restaurants = fetch_restaurants(place, API_KEY)
 
-    names = [restaurant.get("name") for restaurant in suggested_restaurants]
+    # suggested_restaurants_list = []
 
-    suggestions = Restaurant.query.filter(Restaurant.name.in_(names)).all()
+    # for restaurant in suggested_restaurants:
+    #     name = restaurant.get("name")
+    #     address = restaurant.get("formatted_address")
+    #     restaurant = save_restaurant_to_db(name, address)
 
-    for restaurant in suggestions:
-        sugg_restaurant = UserRestaurants.query.filter_by(restaurant_id = restaurant.id).first()
+    # names = [restaurant.get("name") for restaurant in suggested_restaurants]
 
-        if not sugg_restaurant:
-            new_suggestion = UserRestaurants(user_id = user.id, restaurant_id = restaurant.id)
-            db.session.add(new_suggestion)
-            db.session.commit()
-    my_places = UserRestaurants.query.filter_by(user_id = user.id).all()
+    # suggestions = Restaurant.query.filter(Restaurant.name.in_(names)).all()
+    # restaurant_name_id = [{restaurant.name, restaurant.id} for restaurant in suggestions]
+
+    # for restaurant in suggestions:
+    #     sugg_restaurant = UserRestaurants.query.filter_by(restaurant_id = restaurant.id).first()
+
+    #     if not sugg_restaurant:
+    #         new_suggestion = UserRestaurants(user_id = user.id, restaurant_id = restaurant.id)
+    #         db.session.add(new_suggestion)
+    #         db.session.commit()
+    #         suggested_restaurants_list.append(new_suggestion)
+    
+    # print(suggested_restaurants)
+    # print(restaurant_name_id)
+    # print(place)
+    # my_places = UserRestaurants.query.filter_by(user_id = user.id).all()
+    my_places = UserRestaurants.query.all()
+
+    # for place in my_places:
+    #     db.session.delete(place)
+    #     db.session.commit()
+
+    print(my_places)
 
     return render_template("page_my_restaurants.html", user = user, my_places = my_places)    
 

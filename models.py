@@ -63,7 +63,6 @@ class User(db.Model):
 
     location = db.Column(
         db.Text,
-        default="643 Pearl Harbor str, Bridgeport, CT",
     )
 
     password = db.Column(
@@ -120,7 +119,7 @@ class User(db.Model):
         return len(found_user_list) == 1
 
     @classmethod
-    def signup(cls, username, email, password, image_url):
+    def signup(cls, username, email, password, image_url, location):
         """Sign up user.
 
         Hashes password and adds user to system.
@@ -132,6 +131,7 @@ class User(db.Model):
             email=email,
             password=hashed_pwd,
             image_url=image_url,
+            location = location
         )
 
         db.session.add(user)

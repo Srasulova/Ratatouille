@@ -7,8 +7,6 @@ from wtforms.validators import DataRequired, Email, Length
 # csrf = CSRFProtect()
 
 
-
-
 class UserAddForm(FlaskForm):
     """Form for adding users."""
 
@@ -16,6 +14,7 @@ class UserAddForm(FlaskForm):
     email = StringField('E-mail', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[Length(min=6)])
     image_url = StringField('(Optional) Image URL')
+    location = StringField('Location')
 
 
 class LoginForm(FlaskForm):
