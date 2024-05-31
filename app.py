@@ -141,13 +141,9 @@ def users_show(user_id):
 
     form = UserEditForm()
 
-    
-
     favorites = Favorites.query.filter_by(user_id=user.id).all()
     wishlisted = WishlistRestaurants.query.filter_by(user_id=user.id).all()
     visited = VisitedRestaurants.query.filter_by(user_id=user.id).all()
-
-    # print(user.location)
             
     return render_template("page_user_profile.html", user=user, favorites = favorites, wishlisted = wishlisted, visited = visited)
 
@@ -321,53 +317,37 @@ def show_my_restaurants(user_id):
 
     user = User.query.get_or_404(user_id)
 
-    # print(f"User: {user}")
-    # print(f"User Location: {user.location}")
+    place = user.location
+    suggested_restaurants = fetch_restaurants(place, API_KEY)
 
-    # place = user.location
-    # suggested_restaurants = fetch_restaurants(place, API_KEY)
+    suggested_restaurants_list = []
 
-    # suggested_restaurants_list = []
+    for restaurant in suggested_restaurants:
+        name = restaurant.get("name")
+        address = restaurant.get("formatted_address")
+        restaurant = save_restaurant_to_db(name, address)
 
-    # for restaurant in suggested_restaurants:
-    #     name = restaurant.get("name")
-    #     address = restaurant.get("formatted_address")
-    #     restaurant = save_restaurant_to_db(name, address)
+    names = [restaurant.get("name") for restaurant in suggested_restaurants]
 
-    # names = [restaurant.get("name") for restaurant in suggested_restaurants]
+    suggestions = Restaurant.query.filter(Restaurant.name.in_(names)).all()
 
-    # suggestions = Restaurant.query.filter(Restaurant.name.in_(names)).all()
-    # restaurant_name_id = [{restaurant.name, restaurant.id} for restaurant in suggestions]
+    for restaurant in suggestions:
+        sugg_restaurant = UserRestaurants.query.filter_by(restaurant_id = restaurant.id).first()
 
-    # for restaurant in suggestions:
-    #     sugg_restaurant = UserRestaurants.query.filter_by(restaurant_id = restaurant.id).first()
-
-    #     if not sugg_restaurant:
-    #         new_suggestion = UserRestaurants(user_id = user.id, restaurant_id = restaurant.id)
-    #         db.session.add(new_suggestion)
-    #         db.session.commit()
-    #         suggested_restaurants_list.append(new_suggestion)
+        if not sugg_restaurant:
+            new_suggestion = UserRestaurants(user_id = user.id, restaurant_id = restaurant.id)
+            db.session.add(new_suggestion)
+            db.session.commit()
+            suggested_restaurants_list.append(new_suggestion)
+        else:
+            suggested_restaurants_list.append(sugg_restaurant)
     
-    # print(suggested_restaurants)
-    # print(restaurant_name_id)
-    # print(place)
     # my_places = UserRestaurants.query.filter_by(user_id = user.id).all()
-    my_places = UserRestaurants.query.all()
 
-    # for place in my_places:
-    #     db.session.delete(place)
-    #     db.session.commit()
-
-    print(my_places)
+    my_places = suggested_restaurants_list
+    # sugg_names = [restaurant.restaurant.name for restaurant in suggested_restaurants_list]
 
     return render_template("page_my_restaurants.html", user = user, my_places = my_places)    
-
-
-# 1. get all the restaurants based on the user's location
-# 2. add them to the restaurants table if the restaurant is not there
-# 3. add those suggested restaurants(only) to the UserRestaurants table if not there yet
-# 4. put empty array(user_suggested_restaurants) and append them into that array. in render_template pass that variable as my_places
-# 5. compare the names in the array with UserRestaurant table and get the names of restaurants other than in suggestions. Put them in "previously suggested to you" section
 
 
 @app.route('/search_restaurant/<int:user_id>', methods=["GET", "POST"])
@@ -387,21 +367,7 @@ def show_search_restaurants(user_id):
     
     return render_template("page_search_restaurant.html", user = user, restaurants = restaurants)
             
-            
-    
-# @app.route('/<int:user_id>', methods=['GET','POST'])
-# def users_show(user_id):
-#     """Show user profile."""
-#     user = User.query.get_or_404(user_id)
 
-#     restaurants = []
-#     if request.method == "POST":
-#         restaurants = get_restaurants_from_request()
-#     return render_template("user_profile.html", restaurants=restaurants, user=user)
-
-
-
-  
 
 
 
