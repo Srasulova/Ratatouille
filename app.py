@@ -139,13 +139,13 @@ def users_show(user_id):
     """Show user profile."""
     user = User.query.get_or_404(user_id)
 
-    form = UserEditForm()
+    review_form = ReviewForm()
 
     favorites = Favorites.query.filter_by(user_id=user.id).all()
     wishlisted = WishlistRestaurants.query.filter_by(user_id=user.id).all()
     visited = VisitedRestaurants.query.filter_by(user_id=user.id).all()
             
-    return render_template("page_user_profile.html", user=user, favorites = favorites, wishlisted = wishlisted, visited = visited)
+    return render_template("page_user_profile.html", user=user, favorites = favorites, wishlisted = wishlisted, visited = visited, review_form = review_form)
 
 
 # Add restaurants to wishlist, favorites and visited:
@@ -368,6 +368,43 @@ def show_search_restaurants(user_id):
     return render_template("page_search_restaurant.html", user = user, restaurants = restaurants)
             
 
+# Review routes
+
+@app.route('/add_review/<int:restaurant_id>', methods=["GET", "POST"])
+def add_review(restaurant_id): 
+    """Add a review if a restaurant is in the visited restaurants list"""
+    if not g.user:
+        flash("Access unauthorized.")
+        return redirect("/")
+    
+    # user = User.query.get_or_404(g.user_id)
+    restaurant = Restaurant.query.get_or_404(restaurant_id)
+
+    if not restaurant:
+        flash("Restaurant not found.")
+        return redirect(f'/{g.user.id}')
+
+    # Check if the restaurant has been visited by the user
+    visited = VisitedRestaurants.query.filter_by(user_id=g.user.id, restaurant_id=restaurant_id).first()
+
+    review_form = ReviewForm()
+
+    if visited:
+        if review_form.validate_on_submit():
+            content = review_form.text.data
+            review = Review(
+                user_id=g.user.id,
+                restaurant_id=restaurant_id,
+                content=content
+            )
+            db.session.add(review)
+            db.session.commit()
+            flash("Review added successfully!")
+            return redirect(f'/my_lists/{g.user.id}')
+
+    return render_template("page_user_profile.html",  visited=visited, review_form=review_form)
+
+        
 
 
 

@@ -37,4 +37,4 @@ class UserEditForm(FlaskForm):
 
 class ReviewForm(FlaskForm):
     """Form for adding/editing a review"""
-    text = TextAreaField('text', validators=[DataRequired()])
+    text = TextAreaField('Add review', validators=[DataRequired()])

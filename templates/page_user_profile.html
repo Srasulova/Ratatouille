@@ -95,21 +95,39 @@
             <ul class="">
               {% for visit in  visited %}
               {% if loop.index <= 5 %}
-              <li class="text-lg font-medium text-gray-900 flex items-center justify-center space-x-2 py-2">
+              <li class="text-lg font-medium text-gray-900 flex flex-col items-start justify-center space-x-2 py-2">
                 <p class="">{{ visit.restaurant.name }}</p>
-                  <!-- Delete icon -->
-                  <form
-                    action="{{ url_for('delete_visited', restaurant_id=visit.restaurant.id) }}"
-                    method="POST"
-                    class="flex items-center"
-                  >
-                    <button type="submit" class="bg-transparent border-0">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                      </svg>
-                      
+                  <!-- Review form -->
+                  <form method="post" id="add-review-form" class="flex flex-col" action="{{ url_for('add_review', restaurant_id=visit.restaurant.id) }}">
+                    {{ review_form.hidden_tag() }} {% for field in review_form if field.widget.input_type !=
+                    'hidden' %}
+                    <div class="mb-4">
+                      {{ field.label(class="block text-gray-700 text-sm font-bold mb-2") }} {{
+                      field(class="shadow appearance-none border rounded w-full py-2 px-3
+                      text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+                    </div>
+                    {% endfor %}
+                    <button
+                      type="submit"
+                      class="w-3/2 self-end bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium py-1 px-2 rounded focus:outline-none focus:shadow-outline"
+                    >
+                      Add
                     </button>
                   </form>
+
+         <!-- Delete icon -->
+         <form
+         action="{{ url_for('delete_visited', restaurant_id=visit.restaurant.id) }}"
+         method="POST"
+         class="flex items-center"
+       >
+         <button type="submit" class="bg-transparent border-0">
+           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+           </svg>
+           
+         </button>
+       </form>
               </li>
               {% endif %}
               {% endfor %}
