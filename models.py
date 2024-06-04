@@ -1,12 +1,13 @@
 """SQLAlchemy models for Ratatouille."""
 
-# from csv import DictReader
-from datetime import datetime
+
 
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from sqlalchemy import Column, ForeignKey, Table
+# from sqlalchemy import Column, ForeignKey, Table
+
+from datetime import datetime
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -19,6 +20,8 @@ class MyDateTime(db.TypeDecorator):
         if type(value) is str:
             return datetime.strptime(value, '%Y-%m-%d %H:%M:%S.%f')
         return value
+    
+
 
 class Follows(db.Model):
     """Connection of a follower <-> followed_user."""
@@ -278,7 +281,7 @@ class Review(db.Model):
     timestamp = db.Column(
         MyDateTime,
         nullable=False,
-        default=datetime.now(),
+        default=datetime.now,
     )
 
     # user = db.relationship('User', backref='user_reviews')
