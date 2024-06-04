@@ -65,19 +65,28 @@
     </div>
 
     <p class="mt-4 text-base leading-7 text-gray-600">
-      Praesentium iure error aliquam voluptas ut libero. Commodi placeat sit
-      iure nulla officiis. Ut ex sit repellat tempora. Qui est accusamus
-      exercitationem natus ut voluptas. Officiis velit eos ducimus.
+      {{ user.bio }}
     </p>
 
-    <div class="mt-6 flex items-center gap-x-1.5">
-      <a
-        href="#"
-        id="edit-user-button"
-        class="rounded-md bg-orange-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-        >Edit your profle</a
-      >
+
+    <div class="flex space-x-2">
+      <button class="mt-6 rounded-md  bg-orange-600 hover:bg-orange-700 text-white px-3.5 py-2.5 text-sm font-semibold border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
+        <a
+          href="{{ url_for('edit_user_profile', user_id=g.user.id) }}"
+          id="edit-user-button"
+          class=""
+          >Edit your profle</a
+        >
+      </button>
+  
+  
+  <form action="{{ url_for('delete_user') }}" method="POST">
+    <button class="mt-6 rounded-md bg-white px-3 py-2.5 text-sm font-semibold border text-lime-800 shadow-sm border-lime-800 hover:bg-lime-800 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
+     Delete your profile
+    </button>
+  </form>
     </div>
+
   </div>
 
   <!-- User's lists, first 5 results of each -->

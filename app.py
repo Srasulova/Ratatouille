@@ -433,7 +433,50 @@ def delete_review(review_id):
         return redirect(f'/my_lists/{g.user.id}')
 
 
+# Edit/update user profile
+@app.route('/edit/<int:user_id>', methods=['GET', 'POST'])
+def edit_user_profile(user_id):
+    """Update profile for current user."""
 
+    if not g.user or g.user.id != user_id :
+        flash("Access unauthorized.")
+        return redirect("/")
+    
+    user = User.query.get_or_404(user_id)
+
+    form = UserEditForm(obj=user)
+
+    if form.validate_on_submit():
+        if not bcrypt.check_password_hash(user.password, form.password.data):
+            flash("Incorrect password. Profile update failed")
+            return redirect("/")
+        
+        user.username=form.username.data
+        user.email=form.email.data
+        user.image_url=form.image_url.data
+        user.bio = form.bio.data
+        user.location = form.location.data
+        db.session.commit()
+        flash("Profile updated successfully!")
+        return redirect(f'/{g.user.id}')
+
+    return render_template('page_edit_user_profile.html', user=user, user_id=user.id, form=form)
+
+# Completely delete user's profile
+@app.route('/delete', methods=["POST"])
+def delete_user():
+    """Delete user."""
+
+    if not g.user:
+        flash("Access unauthorized.")
+        return redirect("/")
+
+    do_logout()
+
+    db.session.delete(g.user)
+    db.session.commit()
+
+    return redirect("/signup")
 
 ##############################################################################
 # Turn off all caching in Flask
