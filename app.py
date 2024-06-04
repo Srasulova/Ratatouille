@@ -376,27 +376,6 @@ def show_search_restaurants(user_id):
 
 # Review routes
 
-# @app.route('/show_review_form/<int:restaurant_id>', methods=["GET", "POST"])
-# def show_review_form(restaurant_id): 
-#     """Show a review form when the button is clicked"""
-#     if not g.user:
-#         flash("Access unauthorized.")
-#         return redirect("/")
-    
-#     restaurant = Restaurant.query.get_or_404(restaurant_id)
-#     if not restaurant:
-#         flash("Restaurant not found.")
-#         return redirect(f'/{g.user.id}')
-
-#     # Check if the restaurant has been visited by the user
-#     visited = VisitedRestaurants.query.filter_by(user_id=g.user.id, restaurant_id=restaurant_id).first()
-
-#     review_form = ReviewForm()
-
-#     return render_template("page_user_profile.html",  visited=visited, review_form=review_form)
-
-
-
 @app.route('/add_review/<int:restaurant_id>', methods=["GET", "POST"])
 def add_review(restaurant_id): 
     """Add a review if a restaurant is in the visited restaurants list"""
