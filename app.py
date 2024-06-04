@@ -124,7 +124,6 @@ def user_login():
     return render_template('login.html', form = form)
     
 
-
 @app.route('/logout')
 def logout():
     """Handle logout of user."""
@@ -144,8 +143,11 @@ def users_show(user_id):
     favorites = Favorites.query.filter_by(user_id=user.id).all()
     wishlisted = WishlistRestaurants.query.filter_by(user_id=user.id).all()
     visited = VisitedRestaurants.query.filter_by(user_id=user.id).all()
+
+    visited_with_reviews = [(visit, Review.query.filter_by(user_id=user.id, restaurant_id=visit.restaurant_id).all()) for visit in visited]
             
-    return render_template("page_user_profile.html", user=user, favorites = favorites, wishlisted = wishlisted, visited = visited, review_form = review_form)
+    return render_template("page_user_profile.html", user=user, favorites = favorites, wishlisted = wishlisted, visited = visited, review_form = review_form, 
+    visited_with_reviews = visited_with_reviews)
 
 
 # Add restaurants to wishlist, favorites and visited:
@@ -307,13 +309,11 @@ def show_my_lists(user_id):
     wishlisted = WishlistRestaurants.query.filter_by(user_id=user.id).all()
     visited = VisitedRestaurants.query.filter_by(user_id=user.id).all()
 
-    visited_with_reviews = []
+    review_form = ReviewForm()
 
-    for visit in visited:
-        reviews = Review.query.filter_by(user_id=user.id, restaurant_id=visit.restaurant_id).all()
-        visited_with_reviews.append((visit, reviews))
+    visited_with_reviews = [(visit, Review.query.filter_by(user_id=user.id, restaurant_id=visit.restaurant_id).all()) for visit in visited]
     
-    return render_template("page_my_lists.html", user = user, favorites = favorites, visited = visited, wishlisted = wishlisted, visited_with_reviews=visited_with_reviews)
+    return render_template("page_my_lists.html", user = user, favorites = favorites, visited = visited, wishlisted = wishlisted, visited_with_reviews=visited_with_reviews, review_form = review_form)
 
 
 # Show all the restaurants suggested to user
@@ -408,6 +408,30 @@ def add_review(restaurant_id):
             return redirect(f'/my_lists/{g.user.id}')
 
     return render_template("page_user_profile.html",  visited=visited, review_form=review_form)
+
+
+@app.route('/delete_review/<int:review_id>', methods=["GET", "POST"])
+def delete_review(review_id):
+    """Delete a review if a restaurant is in the visited restaurants list"""
+    if not g.user:
+        flash("Access unauthorized.")
+        return redirect("/")
+    
+    # restaurant = Restaurant.query.get_or_404(restaurant_id)
+
+    # Check if the restaurant has a review
+    review = Review.query.filter_by(id = review_id).first()
+
+    if not review:
+        flash("Review not found.")
+        return redirect(f'/my_lists/{g.user.id}')
+
+    if review:
+        db.session.delete(review)
+        db.session.commit()
+        flash("Removed the review.")
+        return redirect(f'/my_lists/{g.user.id}')
+
 
 
 
