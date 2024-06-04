@@ -174,5 +174,38 @@
     {% endif %} 
     
     {% block content %} {% endblock %}
+
+
+
+    <script>
+   
+          // Add event listener to all "Add a review" buttons
+          document.querySelectorAll('button[id^="add-review-btn-"]').forEach(button => {
+              button.addEventListener("click", function() {
+                  const restaurantId = this.id.split('-').pop();  // Get the restaurant ID from the button's ID
+                  const reviewForm = document.getElementById(`add-review-form-${restaurantId}`);
+                  if (reviewForm) {
+                      reviewForm.classList.toggle("hidden");  // Toggle the visibility of the form
+                  }
+              });
+          });
+      
+          // Add event listener to all "Cancel" buttons
+          document.querySelectorAll('button[id^="cancel-review-btn-"]').forEach(button => {
+              button.addEventListener("click", function() {
+                  const restaurantId = this.id.split('-').pop();  // Get the restaurant ID from the button's ID
+                  const reviewForm = document.getElementById(`add-review-form-${restaurantId}`);
+                  console.log(reviewForm);
+                  if (reviewForm) {
+                    // Clear the form inputs
+                    reviewForm.querySelectorAll('input, textarea').forEach(input => input.value = '');
+                    // Hide the form
+                    reviewForm.classList.add("hidden");
+                  }
+              });
+          });
+      </script>
+      
+      
   </body>
 </html>

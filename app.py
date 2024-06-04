@@ -306,8 +306,14 @@ def show_my_lists(user_id):
     favorites = Favorites.query.filter_by(user_id=user.id).all()
     wishlisted = WishlistRestaurants.query.filter_by(user_id=user.id).all()
     visited = VisitedRestaurants.query.filter_by(user_id=user.id).all()
+
+    visited_with_reviews = []
+
+    for visit in visited:
+        reviews = Review.query.filter_by(user_id=user.id, restaurant_id=visit.restaurant_id).all()
+        visited_with_reviews.append((visit, reviews))
     
-    return render_template("page_my_lists.html", user = user, favorites = favorites, visited = visited, wishlisted = wishlisted )
+    return render_template("page_my_lists.html", user = user, favorites = favorites, visited = visited, wishlisted = wishlisted, visited_with_reviews=visited_with_reviews)
 
 
 # Show all the restaurants suggested to user
@@ -370,6 +376,27 @@ def show_search_restaurants(user_id):
 
 # Review routes
 
+# @app.route('/show_review_form/<int:restaurant_id>', methods=["GET", "POST"])
+# def show_review_form(restaurant_id): 
+#     """Show a review form when the button is clicked"""
+#     if not g.user:
+#         flash("Access unauthorized.")
+#         return redirect("/")
+    
+#     restaurant = Restaurant.query.get_or_404(restaurant_id)
+#     if not restaurant:
+#         flash("Restaurant not found.")
+#         return redirect(f'/{g.user.id}')
+
+#     # Check if the restaurant has been visited by the user
+#     visited = VisitedRestaurants.query.filter_by(user_id=g.user.id, restaurant_id=restaurant_id).first()
+
+#     review_form = ReviewForm()
+
+#     return render_template("page_user_profile.html",  visited=visited, review_form=review_form)
+
+
+
 @app.route('/add_review/<int:restaurant_id>', methods=["GET", "POST"])
 def add_review(restaurant_id): 
     """Add a review if a restaurant is in the visited restaurants list"""
@@ -377,7 +404,6 @@ def add_review(restaurant_id):
         flash("Access unauthorized.")
         return redirect("/")
     
-    # user = User.query.get_or_404(g.user_id)
     restaurant = Restaurant.query.get_or_404(restaurant_id)
 
     if not restaurant:
@@ -403,9 +429,6 @@ def add_review(restaurant_id):
             return redirect(f'/my_lists/{g.user.id}')
 
     return render_template("page_user_profile.html",  visited=visited, review_form=review_form)
-
-        
-
 
 
 

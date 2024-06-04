@@ -4,7 +4,7 @@
 
   <!-- Visited restaurants -->
 
-<div class="w-full">
+<!-- <div class="w-full">
   {% if visited %}
   <div class="mx-auto w-full inline-flex items-center flex-col">
     <h3 class="text-2xl font-bold text-lime-700 mb-4">
@@ -15,31 +15,73 @@
       <li class="text-lg font-medium text-gray-900 flex items-center py-2">
         {{ visit.restaurant.name }}
         <div
-          class="svg-elements flex space-x-2 items-center justify-center ml-8"
-        >
-          <!-- Visited place/location  icon -->
-
+          class="svg-elements flex space-x-2 items-center justify-center ml-8">
           <form
             action="{{ url_for('delete_visited', restaurant_id=visit.restaurant.id) }}"
-            method="POST"
-          >
+            method="POST">
             <button type="submit" class="bg-transparent border-0">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-              </svg>
-              
+              </svg>     
             </button>
           </form>
         </div>
-
-    
       </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</div> -->
 
+<div class="w-full">
+  {% if visited %}
+  <div class="mx-auto w-full inline-flex items-center flex-col">
+    <h3 class="text-2xl font-bold text-lime-700 mb-4">
+      Restaurants you visited
+    </h3>
+    <ul class="">
+      {% for visit, reviews in visited_with_reviews %}
+      <li class="text-lg font-medium text-gray-900 flex flex-col py-2">
+        <div class="flex items-center">
+          {{ visit.restaurant.name }}
+          <div class="svg-elements flex space-x-2 items-center justify-center ml-8">
+            <!-- Delete visited place/location icon -->
+            <form
+              action="{{ url_for('delete_visited', restaurant_id=visit.restaurant.id) }}"
+              method="POST"
+            >
+              <button type="submit" class="bg-transparent border-0">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Display reviews if there are any -->
+        {% if reviews %}
+        <div class="reviews mt-2">
+          <h4 class="text-medium font-semibold text-orange-600">Reviews:</h4>
+          {% for review in reviews %}
+          <div class="review mb-2">
+            <p class="review-content">{{ review.content }}</p>
+            <p class="review-timestamp text-sm text-gray-500">{{ review.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="no-reviews text-sm text-gray-500">No reviews yet.</p>
+        {% endif %}
+
+        <hr />
+      </li>
       {% endfor %}
     </ul>
   </div>
   {% endif %}
 </div>
+
 
 <div class="flex space-x-8 mt-10">
   <!-- Wishlisted restaurants -->

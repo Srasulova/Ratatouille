@@ -96,26 +96,12 @@
               {% for visit in  visited %}
               {% if loop.index <= 5 %}
               <li class="text-lg font-medium text-gray-900 flex flex-col items-start justify-center space-x-2 py-2">
-                <p class="">{{ visit.restaurant.name }}</p>
-                  <!-- Review form -->
-                  <form method="post" id="add-review-form" class="flex flex-col" action="{{ url_for('add_review', restaurant_id=visit.restaurant.id) }}">
-                    {{ review_form.hidden_tag() }} {% for field in review_form if field.widget.input_type !=
-                    'hidden' %}
-                    <div class="mb-4">
-                      {{ field.label(class="block text-gray-700 text-sm font-bold mb-2") }} {{
-                      field(class="shadow appearance-none border rounded w-full py-2 px-3
-                      text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
-                    </div>
-                    {% endfor %}
-                    <button
-                      type="submit"
-                      class="w-3/2 self-end bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium py-1 px-2 rounded focus:outline-none focus:shadow-outline"
-                    >
-                      Add
-                    </button>
-                  </form>
 
-         <!-- Delete icon -->
+                <div class="flex space-x-2 items-center justify-center">
+                  <p class="">{{ visit.restaurant.name }}</p>
+
+                  <div class="flex space-x-3 items-center justify-center">
+                              <!-- Delete icon -->
          <form
          action="{{ url_for('delete_visited', restaurant_id=visit.restaurant.id) }}"
          method="POST"
@@ -128,6 +114,48 @@
            
          </button>
        </form>
+                </div>
+              
+                <!-- Add review button -->
+                <button type="button"
+                id="add-review-btn-{{ visit.restaurant.id }}"
+                class="w-3/2 self-center my-2 bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium py-1 px-2 rounded focus:outline-none focus:shadow-outline">
+                Add a review
+            </button>
+                  </div>
+       
+
+                
+                  <!-- Review form -->
+                  <form method="post" id="add-review-form-{{ visit.restaurant.id }}" class="flex flex-col w-full hidden" action="{{ url_for('add_review', restaurant_id=visit.restaurant.id) }}">
+                    {{ review_form.hidden_tag() }} {% for field in review_form if field.widget.input_type !=
+                    'hidden' %}
+                    <div class="mb-4">
+                      {{ field.label(class="block text-gray-700 text-sm font-bold mb-2") }} {{
+                      field(class="shadow appearance-none border rounded w-full py-2 px-3
+                      text-gray-700 leading-tight focus:outline-none focus:shadow-outline") }}
+                    </div>
+                    {% endfor %}
+                    <div class="buttons">
+                      <button
+                      type="submit"
+                      class="w-3/2 self-end bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium py-1 px-2 rounded focus:outline-none focus:shadow-outline"
+                    >
+                      Add
+                    </button>
+
+                    <button
+                    type="button"
+                    class="w-3/2 self-end bg-lime-700 hover:bg-lime-800 text-white text-sm font-medium py-1 px-2 rounded focus:outline-none focus:shadow-outline"
+                    id="cancel-review-btn-{{ visit.restaurant.id }}"
+                  >
+                    Cancel
+                  </button>
+                    </div>
+                    
+                  </form>
+
+        
               </li>
               {% endif %}
               {% endfor %}
