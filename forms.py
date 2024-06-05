@@ -14,7 +14,7 @@ class UserAddForm(FlaskForm):
     email = StringField('E-mail', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[Length(min=6)])
     image_url = StringField('(Optional) Image URL')
-    location = StringField('Enter your location, address or zip code')
+ 
 
 
 class LoginForm(FlaskForm):
@@ -32,7 +32,7 @@ class UserEditForm(FlaskForm):
     password = PasswordField('Password', validators=[Length(min=6)])
     image_url = StringField('Image URL')
     bio = TextAreaField('Bio')
-    location = StringField('Location')
+    location = StringField('Enter your address or zipcode')
 
 
 class ReviewForm(FlaskForm):

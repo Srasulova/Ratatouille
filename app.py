@@ -93,7 +93,7 @@ def signup():
 
     if form.validate_on_submit():
         try:
-            user = User.signup(username = form.username.data, password = form.password.data, email= form.email.data, image_url= form.image_url.data or User.image_url.default.arg, location = form.location.data or User.location.default.arg)
+            user = User.signup(username = form.username.data, password = form.password.data, email= form.email.data, image_url= form.image_url.data or User.image_url.default.arg)
             db.session.commit()
         except IntegrityError:
             flash("This username already exists! So many foodies think alike. Try another one!")
@@ -139,6 +139,13 @@ def users_show(user_id):
     user = User.query.get_or_404(user_id)
 
     review_form = ReviewForm()
+    user_edit_form = UserEditForm(obj=user)
+
+    if user_edit_form.validate_on_submit():
+        user.location = user_edit_form.location.data
+        db.session.commit()
+        flash("Location submitted successfully!")
+        return redirect(f'/{g.user.id}')
 
     favorites = Favorites.query.filter_by(user_id=user.id).all()
     wishlisted = WishlistRestaurants.query.filter_by(user_id=user.id).all()
@@ -147,7 +154,7 @@ def users_show(user_id):
     visited_with_reviews = [(visit, Review.query.filter_by(user_id=user.id, restaurant_id=visit.restaurant_id).all()) for visit in visited]
             
     return render_template("page_user_profile.html", user=user, favorites = favorites, wishlisted = wishlisted, visited = visited, review_form = review_form, 
-    visited_with_reviews = visited_with_reviews)
+    visited_with_reviews = visited_with_reviews, user_edit_form = user_edit_form)
 
 
 # Add restaurants to wishlist, favorites and visited:
@@ -176,7 +183,9 @@ def toggle_favorite(restaurant_id):
         db.session.commit()
         flash("Added to favorites.")
 
-    return redirect(f'/{g.user.id}')
+    # Redirect back to the search page with the search term
+    place = request.form.get("place")
+    return redirect(url_for('show_search_restaurants', user_id=g.user.id, place=place))
 
 
 @app.route('/add_wishlist/<int:restaurant_id>', methods=["POST"])
@@ -203,7 +212,9 @@ def toggle_wishlist(restaurant_id):
         db.session.commit()
         flash("Added to wishlists.")
 
-    return redirect(f'/{g.user.id}')
+    # Redirect back to the search page with the search term
+    place = request.form.get("place")
+    return redirect(url_for('show_search_restaurants', user_id=g.user.id, place=place))
 
 
 @app.route('/add_visited/<int:restaurant_id>', methods=["POST"])
@@ -230,7 +241,9 @@ def toggle_visited(restaurant_id):
         db.session.commit()
         flash("Added to wishlists.")
 
-    return redirect(f'/{g.user.id}')
+    # Redirect back to the search page with the search term
+    place = request.form.get("place")
+    return redirect(url_for('show_search_restaurants', user_id=g.user.id, place=place))
 
 
 # Delete from wishlist, favorites and visited restaurants
@@ -361,17 +374,34 @@ def show_search_restaurants(user_id):
     """Show a search bar and the search result"""
     user = User.query.get_or_404(user_id)
     restaurants = []
+    place = request.args.get("place") or request.form.get("place")
+    
     if request.method == "POST":
+        # If the form is submitted via POST, update the place variable
         place = request.form.get("place")
+
+    if place:
+        # Fetch restaurants only if place is not empty
         restaurants_data = fetch_restaurants(place, API_KEY)
+
+        wishlisted_ids = {r.id for r in user.wishlist_restaurants}
+        visited_ids = {r.id for r in user.visited_restaurants}
+        favorite_ids = {r.id for r in user.favorites_restaurants}
 
         for restaurant_data in restaurants_data:
             name = restaurant_data.get("name")
             address = restaurant_data.get("formatted_address")
             restaurant = save_restaurant_to_db(name, address)
+
+            # Add custom attributes to the restaurant object
+            restaurant.is_wishlisted = restaurant.id in wishlisted_ids
+            restaurant.is_visited = restaurant.id in visited_ids
+            restaurant.is_favorite = restaurant.id in favorite_ids
+
             restaurants.append(restaurant)
     
-    return render_template("page_search_restaurant.html", user = user, restaurants = restaurants)
+    return render_template("page_search_restaurant.html", user=user, restaurants=restaurants, place = place)
+
             
 
 # Review routes
