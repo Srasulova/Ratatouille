@@ -2,11 +2,12 @@
 
         <!-- Display reviews if there are any -->
         {% if reviews %}
-        <div class="reviews mt-2 max-w-5xl mx-auto flex flex-col items-center">
+        <div class="reviews mt-2 max-w-5xl mx-auto">
           <h4 class="text-lg my-6 font-semibold text-orange-600">Your Reviews:</h4>
           {% for review in reviews %}
           <div class="review mb-2 flex space-x-4 items-center">
             <div class="review-name-content">
+                <p class="text-lg text-lime-700 font-semibold">{{ review.restaurant.name }}</p>
               <p class="review-content">{{ review.content }}</p>
             <p class="review-timestamp text-sm text-gray-500">{{ review.timestamp.strftime('%Y-%m-%d %H:%M') }}</p> 
             </div>
