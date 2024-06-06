@@ -419,6 +419,14 @@ def show_search_restaurants(user_id):
 
 
 # Review routes
+@app.route('/my_reviews/<int:user_id>')
+def show_my_reviews(user_id):
+    """Show user's reviews on restaurants"""
+    user = User.query.get_or_404(user_id)
+
+    reviews = Review.query.filter_by(user_id=g.user.id).first()
+
+
 @app.route('/add_review/<int:restaurant_id>', methods=["GET", "POST"])
 def add_review(restaurant_id): 
     """Add a review if a restaurant is in the visited restaurants list"""
