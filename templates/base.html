@@ -217,19 +217,19 @@
       });
   });
 
-  // Add event listener to all "Cancel" buttons in edit review forms
-  document.querySelectorAll('button.cancel-edit-btn').forEach(button => {
-      button.addEventListener("click", function() {
-          const reviewId = this.dataset.reviewId;  // Get the review ID from the data attribute
-          const editReviewForm = document.getElementById(`edit-review-form-${reviewId}`);
-          if (editReviewForm) {
-              // Clear the form inputs
-              editReviewForm.querySelectorAll('input, textarea').forEach(input => input.value = '');
-              // Hide the form
-              editReviewForm.classList.add("hidden");
-          }
-      });
+ // Add event listener to all "Cancel" buttons in edit review form
+ document.querySelectorAll('button[id^="cancel-edit-btn-"]').forEach(button => {
+  button.addEventListener("click", function() {
+      const restaurantId = this.id.split('-').pop();  // Get the restaurant ID from the button's ID
+      const editReviewForm = document.getElementById(`edit-review-form-${restaurantId}`);
+      if (editReviewForm) {
+          // Clear the form inputs
+          editReviewForm.querySelectorAll('input, textarea').forEach(input => input.value = '');
+          // Hide the form
+          editReviewForm.classList.add("hidden");
+      }
   });
+});
       </script>
       
       
