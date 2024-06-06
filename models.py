@@ -176,6 +176,10 @@ class Restaurant(db.Model):
         db.Text,
     )
 
+    photos = db.Column(
+        db.Text,
+    )
+
     reviews = db.relationship('Review', backref= 'restaurant')
 
     __table_args__ = (db.UniqueConstraint('name', 'address', name='_name_address_uc'),)

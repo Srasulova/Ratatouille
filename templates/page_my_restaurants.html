@@ -13,10 +13,12 @@
       <li class="">
        <p class="text-lg font-semibold text-gray-900 flex items-center py-2">{{ place.restaurant.name }}</p> 
         <p class="text-sm font-medium text-gray-900 flex items-center py-2">{{ place.restaurant.address }}</p>
-        <section>{{place.restaurant.photos}}</section>
-        <div
-          class="svg-elements flex space-x-2 items-center justify-center ml-8"
-        >
+        <div class="photos">
+          {% if place.restaurant.photos_urls %}
+            {% for photo_url in place.restaurant.photos_urls %}
+              <img src="{{ photo_url }}" alt="Restaurant Photo">
+            {% endfor %}
+          {% endif %}
         </div>
       </li>
 

@@ -6,7 +6,9 @@ from models import db, connect_db, User, Restaurant, VisitedRestaurants, Wishlis
 from sqlalchemy.exc import IntegrityError
 from forms import UserAddForm, UserEditForm, LoginForm, ReviewForm
 from flask_bcrypt import Bcrypt
-# from flask_migrate import Migrate
+from flask_migrate import Migrate
+import json
+
 
 bcrypt = Bcrypt()
 
@@ -24,8 +26,6 @@ toolbar = DebugToolbarExtension(app)
 CURR_USER_KEY = 'curr_user'
 API_KEY = "AIzaSyDQaQ4Zi8e-5YKSb_9VJvkKns3uYoq435g"
 
-# csrf.init_app(app)
-
 
 def fetch_restaurants(place, api_key):
     url = f"https://maps.googleapis.com/maps/api/place/textsearch/json?query=restaurants+in+{place}&key={api_key}"
@@ -40,17 +40,34 @@ def fetch_restaurants(place, api_key):
 
     return restaurants
 
-def save_restaurant_to_db(name, address):
+def get_photo_url(photo_reference, api_key):
+    url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={photo_reference}&key={api_key}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.url
+    else:
+        return None
+
+def save_restaurant_to_db(name, address, photos, api_key):
     """Save restaurant to the database if it doesn't already exist."""
     restaurant = Restaurant.query.filter_by(name=name, address=address).first()
     if not restaurant:
-        restaurant = Restaurant(name=name, address=address)
+        # Limit photos to the first 3
+        photo_urls = []
+        for photo_info in photos[:3]:
+            photo_reference = photo_info.get("photo_reference")
+            photo_url = get_photo_url(photo_reference, api_key)
+            if photo_url:
+                photo_urls.append(photo_url)
+
+        photos_json = json.dumps(photo_urls)
+        restaurant = Restaurant(name=name, address=address, photos=photos_json)
         db.session.add(restaurant)
         db.session.commit()
     return restaurant
 
 
-# migrate = Migrate(app, db)
+migrate = Migrate(app, db)
 
 with app.app_context():
    connect_db(app)
@@ -344,7 +361,8 @@ def show_my_restaurants(user_id):
     for restaurant in suggested_restaurants:
         name = restaurant.get("name")
         address = restaurant.get("formatted_address")
-        restaurant = save_restaurant_to_db(name, address)
+        photos = restaurant.get("photos")
+        restaurant = save_restaurant_to_db(name, address, photos, API_KEY)
 
     names = [restaurant.get("name") for restaurant in suggested_restaurants]
 
@@ -360,11 +378,16 @@ def show_my_restaurants(user_id):
             suggested_restaurants_list.append(new_suggestion)
         else:
             suggested_restaurants_list.append(sugg_restaurant)
-    
-    # my_places = UserRestaurants.query.filter_by(user_id = user.id).all()
+
+     # Load photos_urls for each restaurant in my_places
+    for place in suggested_restaurants_list:
+        restaurant_obj = Restaurant.query.get(place.restaurant_id)
+        if restaurant_obj and restaurant_obj.photos:
+            photos_urls = json.loads(restaurant_obj.photos)
+            restaurant_obj.photos_urls = photos_urls
+            place.restaurant = restaurant_obj
 
     my_places = suggested_restaurants_list
-    # sugg_names = [restaurant.restaurant.name for restaurant in suggested_restaurants_list]
 
     return render_template("page_my_restaurants.html", user = user, my_places = my_places)    
 
@@ -391,18 +414,22 @@ def show_search_restaurants(user_id):
         for restaurant_data in restaurants_data:
             name = restaurant_data.get("name")
             address = restaurant_data.get("formatted_address")
-            restaurant = save_restaurant_to_db(name, address)
+            photos = restaurant_data.get("photos")
+            restaurant = save_restaurant_to_db(name, address, photos, API_KEY)
 
             # Add custom attributes to the restaurant object
             restaurant.is_wishlisted = restaurant.id in wishlisted_ids
             restaurant.is_visited = restaurant.id in visited_ids
             restaurant.is_favorite = restaurant.id in favorite_ids
 
+             # Get the photo URLs from the photos JSON
+            photos_urls = json.loads(restaurant.photos)
+            restaurant.photos_urls = photos_urls  # Add photos URLs to the restaurant object
+
             restaurants.append(restaurant)
     
     return render_template("page_search_restaurant.html", user=user, restaurants=restaurants, place = place)
 
-            
 
 # Review routes
 
