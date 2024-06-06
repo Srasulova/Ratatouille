@@ -52,19 +52,17 @@ def save_restaurant_to_db(name, address, photos, api_key):
     """Save restaurant to the database if it doesn't already exist."""
     restaurant = Restaurant.query.filter_by(name=name, address=address).first()
     if not restaurant:
-        # Limit photos to the first 3
-        photo_urls = []
-        for photo_info in photos[:3]:
-            photo_reference = photo_info.get("photo_reference")
+        # Get the first photo URL
+        photo_url = None
+        if photos:
+            photo_reference = photos[0].get("photo_reference")
             photo_url = get_photo_url(photo_reference, api_key)
-            if photo_url:
-                photo_urls.append(photo_url)
-
-        photos_json = json.dumps(photo_urls)
-        restaurant = Restaurant(name=name, address=address, photos=photos_json)
+        
+        restaurant = Restaurant(name=name, address=address, photos=photo_url)
         db.session.add(restaurant)
         db.session.commit()
     return restaurant
+
 
 
 migrate = Migrate(app, db)
@@ -379,14 +377,6 @@ def show_my_restaurants(user_id):
         else:
             suggested_restaurants_list.append(sugg_restaurant)
 
-     # Load photos_urls for each restaurant in my_places
-    for place in suggested_restaurants_list:
-        restaurant_obj = Restaurant.query.get(place.restaurant_id)
-        if restaurant_obj and restaurant_obj.photos:
-            photos_urls = json.loads(restaurant_obj.photos)
-            restaurant_obj.photos_urls = photos_urls
-            place.restaurant = restaurant_obj
-
     my_places = suggested_restaurants_list
 
     return render_template("page_my_restaurants.html", user = user, my_places = my_places)    
@@ -398,7 +388,7 @@ def show_search_restaurants(user_id):
     user = User.query.get_or_404(user_id)
     restaurants = []
     place = request.args.get("place") or request.form.get("place")
-    
+
     if request.method == "POST":
         # If the form is submitted via POST, update the place variable
         place = request.form.get("place")
@@ -422,17 +412,13 @@ def show_search_restaurants(user_id):
             restaurant.is_visited = restaurant.id in visited_ids
             restaurant.is_favorite = restaurant.id in favorite_ids
 
-             # Get the photo URLs from the photos JSON
-            photos_urls = json.loads(restaurant.photos)
-            restaurant.photos_urls = photos_urls  # Add photos URLs to the restaurant object
-
             restaurants.append(restaurant)
-    
-    return render_template("page_search_restaurant.html", user=user, restaurants=restaurants, place = place)
+
+    return render_template("page_search_restaurant.html", user=user, restaurants=restaurants, place=place)
+
 
 
 # Review routes
-
 @app.route('/add_review/<int:restaurant_id>', methods=["GET", "POST"])
 def add_review(restaurant_id): 
     """Add a review if a restaurant is in the visited restaurants list"""
@@ -467,14 +453,37 @@ def add_review(restaurant_id):
     return render_template("page_user_profile.html",  visited=visited, review_form=review_form)
 
 
+@app.route('/edit_review/<int:review_id>', methods=["GET", "POST"])
+def edit_review(review_id):
+    if not g.user:
+        flash("Access unauthorized.")
+        return redirect("/")
+    
+   # Check if the review exists and if it belongs to the current user
+    review = Review.query.filter_by(id=review_id, user_id=g.user.id).first()
+
+    review_form = ReviewForm(obj=review)
+
+    if not review:
+        flash("Review not found.")
+        return redirect(f'/my_lists/{g.user.id}')
+    
+
+    if review_form.validate_on_submit():
+        review.content = review_form.text.data
+        db.session.commit()
+        flash("Review updated successfully!")
+        return redirect(f'/my_lists/{g.user.id}')
+    
+    return render_template("page_my_lists.html", review_form=review_form)
+
+
 @app.route('/delete_review/<int:review_id>', methods=["GET", "POST"])
 def delete_review(review_id):
     """Delete a review if a restaurant is in the visited restaurants list"""
     if not g.user:
         flash("Access unauthorized.")
         return redirect("/")
-    
-    # restaurant = Restaurant.query.get_or_404(restaurant_id)
 
     # Check if the restaurant has a review
     review = Review.query.filter_by(id = review_id).first()

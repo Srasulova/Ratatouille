@@ -30,7 +30,7 @@
           <a
             href="{{ url_for('show_my_restaurants', user_id=g.user.id) }}"
             class="text-gray-900 hover:bg-gray-50 hover:text-gray-900 inline-flex items-center rounded-md py-2 px-3 text-sm font-medium"
-            >My Places</a
+            >Restaurants near me</a
           >
           <a
             href="{{ url_for('show_my_lists', user_id=g.user.id) }}"
@@ -204,6 +204,32 @@
                   }
               });
           });
+
+        
+          // Add event listener to all "Edit" buttons
+    document.querySelectorAll('button[id^="edit-review-btn-"]').forEach(button => {
+      button.addEventListener("click", function() {
+          const reviewId = this.id.split('-').pop();  // Get the review ID from the button's ID
+          const editReviewForm = document.getElementById(`edit-review-form-${reviewId}`);
+          if (editReviewForm) {
+              editReviewForm.classList.toggle("hidden");  // Toggle the visibility of the form
+          }
+      });
+  });
+
+  // Add event listener to all "Cancel" buttons in edit review forms
+  document.querySelectorAll('button.cancel-edit-btn').forEach(button => {
+      button.addEventListener("click", function() {
+          const reviewId = this.dataset.reviewId;  // Get the review ID from the data attribute
+          const editReviewForm = document.getElementById(`edit-review-form-${reviewId}`);
+          if (editReviewForm) {
+              // Clear the form inputs
+              editReviewForm.querySelectorAll('input, textarea').forEach(input => input.value = '');
+              // Hide the form
+              editReviewForm.classList.add("hidden");
+          }
+      });
+  });
       </script>
       
       
