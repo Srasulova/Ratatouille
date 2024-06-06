@@ -424,7 +424,11 @@ def show_my_reviews(user_id):
     """Show user's reviews on restaurants"""
     user = User.query.get_or_404(user_id)
 
-    reviews = Review.query.filter_by(user_id=g.user.id).first()
+    reviews = Review.query.filter_by(user_id=g.user.id).all()
+
+    review_form = ReviewForm()
+
+    return render_template('page_my_reviews.html', user = user, reviews = reviews, review_form = review_form)
 
 
 @app.route('/add_review/<int:restaurant_id>', methods=["GET", "POST"])
