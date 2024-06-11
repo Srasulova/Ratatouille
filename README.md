@@ -62,6 +62,10 @@ project with a million moving parts you can get stuck in.
 
 Ratatouille app allows a user to look up restaurants based on search input such as an address, specific location, zip code, etc. Users can also add restaurants to their wishlisted, favorite, or visited restaurants list. If a user has visited a restaurant, they can leave notes/reviews for that place. Reviews can be edited or completely deleted. The same goes for the restaurants in the user's lists.
 
+## Tech Stack I've used
+
+I've used the following technologies in this project: Python/Flask, SQLite, SQLAlchemy, Jinja, Google Places APIs, JavaScript, HTML, Tailwind CSS.
+
 ## Installation
 
 ### Prerequisites
