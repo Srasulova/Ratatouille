@@ -2,6 +2,13 @@
 
 <div class="max-w-5xl mx-auto">
 
+  <div class="w-full flex flex-col mt-6">
+    {% if not visited and not wishlisted and not favorites %}
+    <p class="text-center text-lime-800 font-semibold text-2xl">Look up some restaurants and add them to your lists</p>
+    {% else %}
+    <p class="text-center text-orange-600 font-semibold text-2xl mb-4">Some of your restaurant lists</p>
+    {% endif %}
+
   <!-- Visited restaurants -->
 
 <div class="w-full">
