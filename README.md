@@ -20,8 +20,8 @@ I've used the following technologies in this project: Python/Flask, SQLite, SQLA
 
 1. **Clone the repository:**
     ```sh
-    git clone https://github.com/hatchways-community/capstone-project-one-6852e58059534e809b4422ed652c4bfe.git
-    cd capstone-project-one-6852e58059534e809b4422ed652c4bfe  # Ensure you navigate into the cloned repository directory
+    git clone https://github.com/Srasulova/Ratatouille.git
+    cd Ratatouille  # Ensure you navigate into the cloned repository directory
     ```
 
 2. **Create a virtual environment and activate it:**
