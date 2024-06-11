@@ -8,6 +8,11 @@ from forms import UserAddForm, UserEditForm, LoginForm, ReviewForm
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
+API_KEY = os.getenv("API_KEY")
 
 
 bcrypt = Bcrypt()
@@ -24,7 +29,6 @@ toolbar = DebugToolbarExtension(app)
 
 
 CURR_USER_KEY = 'curr_user'
-API_KEY = "AIzaSyDQaQ4Zi8e-5YKSb_9VJvkKns3uYoq435g"
 
 
 def fetch_restaurants(place, api_key):
