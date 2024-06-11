@@ -157,7 +157,7 @@ def users_show(user_id):
     user_edit_form = UserEditForm(obj=user)
 
     if user_edit_form.validate_on_submit():
-        user.location = user_edit_form.location.data
+        user.location = user_edit_form.location.data.strip()
         db.session.commit()
         flash("Location submitted successfully!")
         return redirect(f'/{g.user.id}')
@@ -382,10 +382,10 @@ def show_my_restaurants(user_id):
     return render_template("page_my_restaurants.html", user = user, my_places = my_places)    
 
 
-@app.route('/search_restaurant/<int:user_id>', methods=["GET", "POST"])
-def show_search_restaurants(user_id):
+@app.route('/search_restaurant', methods=["GET", "POST"])
+def show_search_restaurants():
     """Show a search bar and the search result"""
-    user = User.query.get_or_404(user_id)
+    user = User.query.get_or_404(g.user.id)
     restaurants = []
     place = request.args.get("place") or request.form.get("place")
 
@@ -451,7 +451,7 @@ def add_review(restaurant_id):
 
     if visited:
         if review_form.validate_on_submit():
-            content = review_form.text.data
+            content = review_form.text.data.strip()
             review = Review(
                 user_id=g.user.id,
                 restaurant_id=restaurant_id,
@@ -482,7 +482,7 @@ def edit_review(review_id):
     
 
     if review_form.validate_on_submit():
-        review.content = review_form.text.data
+        review.content = review_form.text.data.strip()
         db.session.commit()
         flash("Review updated successfully!")
         return redirect(f'/my_lists/{g.user.id}')
@@ -529,11 +529,11 @@ def edit_user_profile(user_id):
             flash("Incorrect password. Profile update failed")
             return redirect("/")
         
-        user.username=form.username.data
-        user.email=form.email.data
-        user.image_url=form.image_url.data
-        user.bio = form.bio.data
-        user.location = form.location.data
+        user.username=form.username.data.strip()
+        user.email=form.email.data.strip()
+        user.image_url=form.image_url.data.strip()
+        user.bio = form.bio.data.strip()
+        user.location = form.location.data.strip()
         db.session.commit()
         flash("Profile updated successfully!")
         return redirect(f'/{g.user.id}')
