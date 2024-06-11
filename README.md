@@ -54,3 +54,49 @@ project with a million moving parts you can get stuck in.
 3. The first two steps require mentor approval to proceed, but after that, you are free to continue working on the project after you submit your work. For instance, you don’t need your mentor to approve your database schema before you start working on your site. Likewise, you don’t need your mentor to approve the first iteration of your site before you start polishing it.
 4. If you get stuck, there is a wealth of resources at your disposal. The course contains all of the material you will need to complete this project, but a well-phrased Google search might yield you an immediate solution to your problem. Don’t forget that your Slack community, TAs, and your mentor there to help you out.
 5. Make sure you use a free API and deploy your project on Heroku , so everyone can see your work!
+
+
+# Ratatouille App
+
+## About the App
+
+Ratatouille app allows a user to look up restaurants based on search input such as an address, specific location, zip code, etc. Users can also add restaurants to their wishlisted, favorite, or visited restaurants list. If a user has visited a restaurant, they can leave notes/reviews for that place. Reviews can be edited or completely deleted. The same goes for the restaurants in the user's lists.
+
+## Installation
+
+### Prerequisites
+
+1. **Python 3.12.4**: Download and install from [python.org](https://www.python.org/downloads/)
+2. **Node.js and npm**: Download and install from [npmjs.com](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+
+### Setup
+
+1. **Clone the repository:**
+    ```sh
+    git clone https://github.com/hatchways-community/capstone-project-one-6852e58059534e809b4422ed652c4bfe.git
+    cd capstone-project-one-6852e58059534e809b4422ed652c4bfe  # Ensure you navigate into the cloned repository directory
+    ```
+
+2. **Create a virtual environment and activate it:**
+    ```sh
+    python -m venv venv
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    ```
+
+3. **Install the required Python packages:**
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+4. **Install Node.js dependencies:**
+    ```sh
+    npm install
+    ```
+
+5. **Run the project:**
+    ```sh
+    npm run dev  # This command will run both the front and back end
+    ```
+
+6. **Open your browser and navigate to** `http://localhost:5000`
+
