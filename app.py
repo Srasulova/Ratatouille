@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from forms import UserAddForm, UserEditForm, LoginForm, ReviewForm
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
-import json
+
 
 
 bcrypt = Bcrypt()
