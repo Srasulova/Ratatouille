@@ -68,6 +68,10 @@
         </div>
       </nav>
 
+      {% for msg in get_flashed_messages() %}
+          <p class="text-lime-800 bg-orange-50 rounded-md py-3 px-3 text-center text-lg font-medium shadow-md mb-10">{{ msg }}</p>
+      {% endfor %}
+
       <div class="relative z-10 flex items-center lg:hidden">
         <!-- Mobile menu button -->
         <button
