@@ -18,29 +18,29 @@
           <!-- Current: "bg-gray-100 text-gray-900", Default: "text-gray-900 hover:bg-gray-50 hover:text-gray-900" -->
           <a
             href="{{ url_for('users_show', user_id=g.user.id) }}"
-            class="bg-gray-100 text-gray-900 inline-flex items-center rounded-md py-2 px-3 text-sm font-medium"
+            class="bg-orange-100 text-lime-800 inline-flex items-center rounded-md py-2 px-3 text-sm font-medium"
             aria-current="page"
             >Home</a
           >
           <a
           href="{{ url_for('show_search_restaurants', user_id=g.user.id) }}"
-          class="text-gray-900 hover:bg-gray-50 hover:text-gray-900 inline-flex items-center rounded-md py-2 px-3 text-sm font-medium"
+          class="text-lime-700 hover:bg-orange-50 hover:text-lime-800 inline-flex items-center rounded-md py-2 px-3 text-sm font-medium"
           >Search Restaurants</a
         >
           <a
             href="{{ url_for('show_my_restaurants', user_id=g.user.id) }}"
-            class="text-gray-900 hover:bg-gray-50 hover:text-gray-900 inline-flex items-center rounded-md py-2 px-3 text-sm font-medium"
+            class="text-lime-700 hover:bg-orange-50 hover:text-lime-800 inline-flex items-center rounded-md py-2 px-3 text-sm font-medium"
             >Restaurants near me</a
           >
           <a
             href="{{ url_for('show_my_lists', user_id=g.user.id) }}"
-            class="text-gray-900 hover:bg-gray-50 hover:text-gray-900 inline-flex items-center rounded-md py-2 px-3 text-sm font-medium"
+            class="text-lime-700 hover:bg-orange-50 hover:text-lime-800 inline-flex items-center rounded-md py-2 px-3 text-sm font-medium"
             >My List</a
           >
           <a
           href="{{ url_for('show_my_reviews', user_id=g.user.id) }}"
-            class="text-gray-900 hover:bg-gray-50 hover:text-gray-900 inline-flex items-center rounded-md py-2 px-3 text-sm font-medium"
-            >My Reviews</a
+            class="text-lime-700 hover:bg-orange-50 hover:text-lime-800 inline-flex items-center rounded-md py-2 px-3 text-sm font-medium"
+            >My Notes</a
           >
        
         </div>
@@ -48,7 +48,7 @@
         <div class="">
           <a
             href="/logout"
-            class="text-gray-900 hover:bg-gray-50 hover:text-gray-900 inline-flex items-center rounded-md py-2 px-3 text-sm font-medium justify-center"
+            class="text-gray-900 hover:bg-orange-50 hover:text-lime-800 inline-flex items-center rounded-md py-2 px-3 text-sm font-medium justify-center"
             >Log out
             <svg
               xmlns="http://www.w3.org/2000/svg"
