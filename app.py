@@ -108,7 +108,7 @@ def signup():
 
     if form.validate_on_submit():
         try:
-            user = User.signup(username = form.username.data, password = form.password.data, email= form.email.data, image_url= form.image_url.data or User.image_url.default.arg)
+            user = User.signup(username = form.username.data.strip(), password = form.password.data.strip(), email= form.email.data.strip(), image_url= form.image_url.data.strip() or User.image_url.default.arg)
             db.session.commit()
         except IntegrityError:
             flash("This username already exists! So many foodies think alike. Try another one!")
@@ -124,8 +124,8 @@ def user_login():
     form = LoginForm()
 
     if form.validate_on_submit():
-        username = form.username.data
-        password = form.password.data
+        username = form.username.data.strip()
+        password = form.password.data.strip()
 
         user = User.authenticate(username, password)
 
@@ -553,6 +553,7 @@ def delete_user():
 
     db.session.delete(g.user)
     db.session.commit()
+    flash("Profile deleted successfully.")
 
     return redirect("/signup")
 
