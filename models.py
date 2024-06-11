@@ -63,7 +63,7 @@ class User(db.Model):
         default="/static/images/default-pic.jpg",
     )
 
-    reviews = db.relationship('Review', backref = "user" )
+    reviews = db.relationship('Review', backref = "user", cascade="all, delete-orphan" )
 
     favorites_restaurants = db.relationship('Restaurant', secondary = "favorites", backref = "favorited_by_users")
 
@@ -74,18 +74,7 @@ class User(db.Model):
     def __repr__(self):
         return f"<User #{self.id}: {self.username}, {self.email}>"
 
-    def is_followed_by(self, other_user):
-        """Is this user followed by `other_user`?"""
-
-        found_user_list = [user for user in self.followers if user == other_user]
-        return len(found_user_list) == 1
-
-    def is_following(self, other_user):
-        """Is this user following `other_use`?"""
-
-        found_user_list = [user for user in self.following if user == other_user]
-        return len(found_user_list) == 1
-
+ 
     @classmethod
     def signup(cls, username, email, password, image_url):
         """Sign up user.
