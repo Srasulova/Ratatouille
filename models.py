@@ -20,25 +20,6 @@ class MyDateTime(db.TypeDecorator):
         if type(value) is str:
             return datetime.strptime(value, '%Y-%m-%d %H:%M:%S.%f')
         return value
-    
-
-
-class Follows(db.Model):
-    """Connection of a follower <-> followed_user."""
-
-    __tablename__ = 'follows'
-
-    user_being_followed_id = db.Column(
-        db.Integer,
-        db.ForeignKey('users.id', ondelete="cascade"),
-        primary_key=True,
-    )
-
-    user_following_id = db.Column(
-        db.Integer,
-        db.ForeignKey('users.id', ondelete="cascade"),
-        primary_key=True,
-    )
 
 
 class User(db.Model):
@@ -81,22 +62,6 @@ class User(db.Model):
         db.Text,
         default="/static/images/default-pic.jpg",
     )
-
-    followers = db.relationship(
-        "User",
-        secondary="follows",
-        primaryjoin=(Follows.user_being_followed_id == id),
-        secondaryjoin=(Follows.user_following_id == id)
-    )
-
-    following = db.relationship(
-        "User",
-        secondary="follows",
-        primaryjoin=(Follows.user_following_id == id),
-        secondaryjoin=(Follows.user_being_followed_id == id)
-    )
-
-    
 
     reviews = db.relationship('Review', backref = "user" )
 
