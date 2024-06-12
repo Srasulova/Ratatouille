@@ -9,6 +9,10 @@ Ratatouille app allows a user to look up restaurants based on search input such 
 
 I've used the following technologies in this project: Python/Flask, SQLite, SQLAlchemy, Jinja, Google Places APIs, JavaScript, HTML, Tailwind CSS.
 
+## Live URL
+
+Play around the app using this URL -  https://ratatouille-uuky.onrender.com The app is not mobile friendly at the moment. This will be fixed soon. 
+
 ## Installation
 
 ### Prerequisites
@@ -46,4 +50,5 @@ I've used the following technologies in this project: Python/Flask, SQLite, SQLA
     ```
 
 6. **Open your browser and navigate to** `http://localhost:5000`
+
 
