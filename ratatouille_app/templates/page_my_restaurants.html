@@ -1,8 +1,6 @@
 {% extends "base.html" %} {% block content %}
 
-
 <div class="w-full">
-  
   <div class="mx-auto w-full inline-flex items-center flex-col">
     <h3 class="text-2xl font-bold text-lime-700 my-4">
       Restaurants based on your location
@@ -10,12 +8,20 @@
     {% if my_places %}
     <ul class="grid grid-cols-2 gap-8 mb-10">
       {% for place in my_places %}
-      <li class="flex flex-col items-center py-2 ">
-       <p class="text-lg font-semibold text-orange-600 flex items-center py-2">{{ place.restaurant.name }}</p> 
-        <p class="text-sm font-medium text-gray-900 flex items-center py-2">{{ place.restaurant.address }}</p>
+      <li class="flex flex-col items-center py-2">
+        <p class="text-lg font-semibold text-orange-600 flex items-center py-2">
+          {{ place.restaurant.name }}
+        </p>
+        <p class="text-sm font-medium text-gray-900 flex items-center py-2">
+          {{ place.restaurant.address }}
+        </p>
         <div class="photos">
           {% if place.restaurant.photos %}
-              <img src="{{ place.restaurant.photos }}" alt="Restaurant Photo" class="rounded-md max-h-64">
+          <img
+            src="{{ place.restaurant.photos }}"
+            alt="Restaurant Photo"
+            class="rounded-md max-h-64"
+          />
           {% endif %}
         </div>
       </li>
@@ -23,11 +29,11 @@
       {% endfor %}
     </ul>
   </div>
+  {% else %}
+  <div>
+    <h2 class="text-2xl font-bold text-orange-600 my-4">Add your location</h2>
+  </div>
   {% endif %}
 </div>
-
-
-
-
 
 {% endblock %}

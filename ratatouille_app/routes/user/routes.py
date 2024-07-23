@@ -69,44 +69,44 @@ def show_my_restaurants(user_id):
     if g.user.id != user_id:
         flash("You are not authorized to view this page.")
         return redirect("/")
-    
 
     user = get_user(user_id)
 
-    place = user.location
-    suggested_restaurants = fetch_restaurants(place, config.API_KEY)
-
     suggested_restaurants_list = []
 
-    for restaurant in suggested_restaurants:
-        name = restaurant.get("name")
-        address = restaurant.get("formatted_address")
-        photos = restaurant.get("photos")
-        restaurant = save_restaurant_to_db(name, address, photos, config.API_KEY)
+    place = user.location
+    # print(place)
+    if place: 
+        suggested_restaurants = fetch_restaurants(place, config.API_KEY)
 
-    names = [restaurant.get("name") for restaurant in suggested_restaurants]
+        for restaurant in suggested_restaurants:
+            name = restaurant.get("name")
+            address = restaurant.get("formatted_address")
+            photos = restaurant.get("photos")
+            restaurant = save_restaurant_to_db(name, address, photos, config.API_KEY)
+    
+        names = [restaurant.get("name") for restaurant in suggested_restaurants]
+    
+        suggestions = Restaurant.query.filter(Restaurant.name.in_(names)).all()
 
-    suggestions = Restaurant.query.filter(Restaurant.name.in_(names)).all()
-
-    for restaurant in suggestions:
-        sugg_restaurant = UserRestaurants.query.filter_by(restaurant_id=restaurant.id).first()
-
-        if not sugg_restaurant:
-            new_suggestion = UserRestaurants(user_id=user.id, restaurant_id=restaurant.id)
-            db.session.add(new_suggestion)
-            try:
-                db.session.commit()
-                suggested_restaurants_list.append(new_suggestion)
-            except Exception as e:
-                db.session.rollback()
-                flash(f"Error saving restaurant: {str(e)}")
-        else:
-            suggested_restaurants_list.append(sugg_restaurant)
+        for restaurant in suggestions:
+            sugg_restaurant = UserRestaurants.query.filter_by(restaurant_id=restaurant.id).first()
+    
+            if not sugg_restaurant:
+                new_suggestion = UserRestaurants(user_id=user.id, restaurant_id=restaurant.id)
+                db.session.add(new_suggestion)
+                try:
+                    db.session.commit()
+                    suggested_restaurants_list.append(new_suggestion)
+                except Exception as e:
+                    db.session.rollback()
+                    flash(f"Error saving restaurant: {str(e)}")
+            else:
+                suggested_restaurants_list.append(sugg_restaurant)
 
     my_places = suggested_restaurants_list
 
     return render_template("page_my_restaurants.html", user=user, my_places=my_places)
-
 
 @user_bp.route('/edit/<int:user_id>', methods=['GET', 'POST'])
 def edit_user_profile(user_id):
