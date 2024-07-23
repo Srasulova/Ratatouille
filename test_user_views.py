@@ -6,18 +6,29 @@
 import os
 from unittest import TestCase
 
-from models import db, User, Review, Restaurant, VisitedRestaurants, WishlistRestaurants, Favorites
+
+from ratatouille_app.models.restaurant import Restaurant, WishlistRestaurants, Favorites, VisitedRestaurants
+from ratatouille_app.models.user import User, UserRestaurants
+from ratatouille_app.models.review import Review
+from ratatouille_app.models import db
+
+
 
 # BEFORE we import our app, let's set an environmental variable
 # to use a different database for tests (we need to do this
 # before we import our app, since that will have already
 # connected to the database
 
-os.environ['DATABASE_URL'] = f"sqlite:///Ratatouille-test.db"
 
 # Now we can import app
 
-from app import app, CURR_USER_KEY
+# from ratatouille_app.app import app
+from ratatouille_app.config import TestConfig
+from ratatouille_app import create_app
+
+config = TestConfig()
+
+app = create_app(TestConfig)
 
 # Create our tables 
 
@@ -64,7 +75,7 @@ class UserViewTestCase(TestCase):
 
         with self.client as c:
             with c.session_transaction() as sess:
-                sess[CURR_USER_KEY] = testuser.id
+                sess[config.CURR_USER_KEY] = testuser.id
 
             resp = c.get(f'/{testuser.id}')
             self.assertEqual(resp.status_code, 200)
@@ -78,7 +89,7 @@ class UserViewTestCase(TestCase):
 
         with self.client as c:
             with c.session_transaction() as sess:
-                sess[CURR_USER_KEY] = testuser.id
+                sess[config.CURR_USER_KEY] = testuser.id
             
             resp = c.post(f"/delete")
             self.assertEqual(resp.status_code, 302)

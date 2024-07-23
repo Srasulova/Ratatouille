@@ -50,5 +50,3 @@ Play around the app using this URL -  https://ratatouille-uuky.onrender.com The 
     ```
 
 6. **Open your browser and navigate to** `http://localhost:5000`
-
-

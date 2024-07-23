@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently \"flask run\" \"npm run tailwind\"",
-    "tailwind": "npx tailwindcss -i ./static/stylesheets/input.css -o ./static/stylesheets/output.css --watch"
+    "dev": "concurrently \"cd ratatouille_app && flask run\" \"npm run tailwind\"",
+    "tailwind": "npx tailwindcss -i ./ratatouille_app/static/stylesheets/input.css -o ./ratatouille_app/static/stylesheets/output.css --watch"
+
   },
   "keywords": [],
   "author": "",
